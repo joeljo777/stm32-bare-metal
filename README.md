@@ -6,6 +6,15 @@
 
 ---
 
+## 📊 Repo Stats
+
+![Total Commits](https://img.shields.io/github/commit-activity/t/joeljo777/stm32-bare-metal?label=Total%20Commits&style=for-the-badge&color=2d6a4f)
+![Last Commit](https://img.shields.io/github/last-commit/joeljo777/stm32-bare-metal?style=for-the-badge&color=52b788&label=Last%20Push)
+![Repo Size](https://img.shields.io/github/repo-size/joeljo777/stm32-bare-metal?style=for-the-badge&color=1b4332&label=Repo%20Size)
+![Language](https://img.shields.io/github/languages/top/joeljo777/stm32-bare-metal?style=for-the-badge&color=40916c)
+
+---
+
 ## 📋 About This Repository
 
 This repository is a structured learning journal for **bare-metal embedded C** on STM32 microcontrollers.  
@@ -112,6 +121,12 @@ gcc project.c -o project && ./project
 - LED blink (pointer-based and struct-based)
 - Digital input reading (button → LED)
 - 4×4 Matrix Keypad scanning via row/column multiplexing
+
+---
+
+## 📈 Commit Activity
+
+[![Activity Graph](https://github-readme-activity-graph.vercel.app/graph?username=joeljo777&repo=stm32-bare-metal&theme=github-compact&area=true&hide_border=true&color=52b788&line=2d6a4f&point=1b4332&area_color=d8f3dc)](https://github.com/joeljo777/stm32-bare-metal/commits/main)
 
 ---
 
