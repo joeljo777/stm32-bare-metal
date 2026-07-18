@@ -143,7 +143,7 @@ gcc project.c -o project && ./project
 </p>
 
 <p align="center">
-  <img width="60%" src="https://github-readme-streak-stats.herokuapp.com/?user=joeljo777&theme=github-dark-blue&hide_border=true&background=0D1117&ring=58A6FF&fire=58A6FF&currStreakLabel=58A6FF" alt="GitHub Streak"/>
+  <img width="60%" src="https://github-readme-streak-stats.herokuapp.com/?user=joeljo777&theme=github-dark-blue&hide_border=true&background=161B22&ring=39d353&fire=39d353&currStreakLabel=39d353" alt="GitHub Streak"/>
 </p>
 
 ---
