@@ -138,16 +138,13 @@ gcc project.c -o project && ./project
 
 ## 📈 Commit Activity
 
-<table width="100%">
-  <tr>
-    <td align="center" width="50%">
-      <img width="100%" src="https://ghchart.rshah.org/58A6FF/joeljo777" alt="GitHub Contribution Calendar"/>
-    </td>
-    <td align="center" width="50%">
-      <img width="100%" src="https://github-readme-streak-stats.herokuapp.com/?user=joeljo777&theme=github-dark-blue&hide_border=true&background=0D1117&ring=58A6FF&fire=58A6FF&currStreakLabel=58A6FF" alt="GitHub Streak"/>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img width="100%" src="https://ghchart.rshah.org/58A6FF/joeljo777" alt="GitHub Contribution Calendar"/>
+</p>
+
+<p align="center">
+  <img width="60%" src="https://github-readme-streak-stats.herokuapp.com/?user=joeljo777&theme=github-dark-blue&hide_border=true&background=0D1117&ring=58A6FF&fire=58A6FF&currStreakLabel=58A6FF" alt="GitHub Streak"/>
+</p>
 
 ---
 
