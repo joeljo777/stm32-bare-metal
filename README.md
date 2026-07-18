@@ -138,7 +138,9 @@ gcc project.c -o project && ./project
 
 ## 📈 Commit Activity
 
-[![Activity Graph](https://github-readme-activity-graph.vercel.app/graph?username=joeljo777&repo=stm32-bare-metal&theme=github-dark&area=true&hide_border=true)](https://github.com/joeljo777/stm32-bare-metal/commits/main)
+<p align="center">
+  <img width="100%" src="https://streak-stats.demolab.com?user=joeljo777&theme=dark&hide_border=true&border_radius=8&date_format=j%20M%5B%20Y%5D&background=0D1117&ring=58A6FF&fire=58A6FF&currStreakLabel=58A6FF&sideLabels=8B949E&currStreakNum=C9D1D9&sideNums=C9D1D9&dates=8B949E" alt="GitHub Streak Stats"/>
+</p>
 
 ---
 
