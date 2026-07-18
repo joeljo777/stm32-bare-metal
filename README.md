@@ -143,7 +143,9 @@ gcc project.c -o project && ./project
 </p>
 
 <p align="center">
-  <img width="60%" src="https://github-readme-streak-stats.herokuapp.com/?user=joeljo777&theme=github-dark-blue&hide_border=true&background=161B22&ring=39d353&fire=39d353&currStreakLabel=39d353" alt="GitHub Streak"/>
+  <a href="https://github.com/joeljo777/stm32-bare-metal/commits/main">
+    <img width="100%" src="https://github-readme-activity-graph.vercel.app/graph?username=joeljo777&repo=stm32-bare-metal&theme=github-compact&area=true&hide_border=true&bg_color=161B22&color=39d353&line=39d353&point=39d353&area_color=0D2818" alt="stm32-bare-metal Commit Activity"/>
+  </a>
 </p>
 
 ---
