@@ -139,10 +139,6 @@ gcc project.c -o project && ./project
 ## 📈 Commit Activity
 
 <p align="center">
-  <img width="100%" src="https://ghchart.rshah.org/39d353/joeljo777" alt="GitHub Contribution Calendar"/>
-</p>
-
-<p align="center">
   <a href="https://github.com/joeljo777/stm32-bare-metal/commits/main">
     <img width="100%" src="https://github-readme-activity-graph.vercel.app/graph?username=joeljo777&repo=stm32-bare-metal&theme=github-compact&area=true&hide_border=true&bg_color=161B22&color=39d353&line=39d353&point=39d353&area_color=0D2818" alt="stm32-bare-metal Commit Activity"/>
   </a>
