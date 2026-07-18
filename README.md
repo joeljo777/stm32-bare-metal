@@ -139,7 +139,7 @@ gcc project.c -o project && ./project
 ## 📈 Commit Activity
 
 <p align="center">
-  <img width="100%" src="https://ghchart.rshah.org/58A6FF/joeljo777" alt="GitHub Contribution Calendar"/>
+  <img width="100%" src="https://ghchart.rshah.org/39d353/joeljo777" alt="GitHub Contribution Calendar"/>
 </p>
 
 <p align="center">
