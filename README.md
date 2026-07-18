@@ -8,10 +8,22 @@
 
 ## 📊 Repo Stats
 
-![Total Commits](https://img.shields.io/github/commit-activity/t/joeljo777/stm32-bare-metal?label=Total%20Commits&style=for-the-badge&color=2d6a4f)
-![Last Commit](https://img.shields.io/github/last-commit/joeljo777/stm32-bare-metal?style=for-the-badge&color=52b788&label=Last%20Push)
-![Repo Size](https://img.shields.io/github/repo-size/joeljo777/stm32-bare-metal?style=for-the-badge&color=1b4332&label=Repo%20Size)
-![Language](https://img.shields.io/github/languages/top/joeljo777/stm32-bare-metal?style=for-the-badge&color=40916c)
+<table width="100%">
+  <tr>
+    <td align="center" width="25%">
+      <img src="https://img.shields.io/github/commit-activity/t/joeljo777/stm32-bare-metal?label=Total%20Commits&style=for-the-badge&color=2d6a4f&labelColor=1b4332"/>
+    </td>
+    <td align="center" width="25%">
+      <img src="https://img.shields.io/github/last-commit/joeljo777/stm32-bare-metal?style=for-the-badge&color=52b788&label=Last%20Push&labelColor=1b4332"/>
+    </td>
+    <td align="center" width="25%">
+      <img src="https://img.shields.io/github/repo-size/joeljo777/stm32-bare-metal?style=for-the-badge&color=1b4332&label=Repo%20Size&labelColor=40916c"/>
+    </td>
+    <td align="center" width="25%">
+      <img src="https://img.shields.io/github/languages/top/joeljo777/stm32-bare-metal?style=for-the-badge&color=40916c&labelColor=2d6a4f"/>
+    </td>
+  </tr>
+</table>
 
 ---
 
