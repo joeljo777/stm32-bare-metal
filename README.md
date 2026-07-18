@@ -138,9 +138,16 @@ gcc project.c -o project && ./project
 
 ## 📈 Commit Activity
 
-<p align="center">
-  <img width="100%" src="https://streak-stats.demolab.com?user=joeljo777&theme=dark&hide_border=true&border_radius=8&date_format=j%20M%5B%20Y%5D&background=0D1117&ring=58A6FF&fire=58A6FF&currStreakLabel=58A6FF&sideLabels=8B949E&currStreakNum=C9D1D9&sideNums=C9D1D9&dates=8B949E" alt="GitHub Streak Stats"/>
-</p>
+<table width="100%">
+  <tr>
+    <td align="center" width="50%">
+      <img width="100%" src="https://github-readme-stats.vercel.app/api?username=joeljo777&show_icons=true&theme=github_dark&hide_border=true&include_all_commits=true&count_private=true&bg_color=0D1117&title_color=58A6FF&icon_color=58A6FF&text_color=C9D1D9" alt="GitHub Stats"/>
+    </td>
+    <td align="center" width="50%">
+      <img width="100%" src="https://github-readme-streak-stats.herokuapp.com/?user=joeljo777&theme=github-dark-blue&hide_border=true&background=0D1117&ring=58A6FF&fire=58A6FF&currStreakLabel=58A6FF" alt="GitHub Streak"/>
+    </td>
+  </tr>
+</table>
 
 ---
 
