@@ -1,0 +1,39 @@
+# STM32 / Embedded C — .gitignore
+
+# ── STM32CubeIDE Build Outputs ──────────────────────────────────────────────
+Debug/
+Release/
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+*.d
+*.o
+*.a
+
+# ── STM32CubeIDE Metadata (keep .cproject/.project so IDE can open projects) ─
+.settings/
+
+# ── Linker Script generated artifacts ───────────────────────────────────────
+*.ld.bak
+
+# ── Launch Configurations (optional: remove next line to keep them) ──────────
+# *.launch
+
+# ── Windows ─────────────────────────────────────────────────────────────────
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ── macOS ────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ── VS Code ──────────────────────────────────────────────────────────────────
+.vscode/
+
+# ── GCC Host Build Outputs ───────────────────────────────────────────────────
+*.exe
+a.out

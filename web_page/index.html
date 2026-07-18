@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STM32F103C8T6 Blue Pill – Interactive Hardware Reference</title>
+  <meta name="description" content="An interactive, visual educational guide to the STM32F103C8T6 (Blue Pill) development board – covering architecture, memory layout, and programming workflows." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary:    #0a0e1a;
+      --bg-secondary:  #0d1220;
+      --bg-card:       #111827;
+      --bg-card-2:     #141c2e;
+      --border:        #1e2d45;
+      --border-glow:   #00d4ff33;
+      --cyan:          #00d4ff;
+      --cyan-dim:      #00a8cc;
+      --cyan-dark:     #003344;
+      --neon-blue:     #0077ff;
+      --purple:        #7c3aed;
+      --green:         #00ff88;
+      --orange:        #ff8c00;
+      --red:           #ff3366;
+      --yellow:        #ffd60a;
+      --text-primary:  #e2e8f0;
+      --text-secondary:#94a3b8;
+      --text-muted:    #475569;
+      --font-mono:     'JetBrains Mono', monospace;
+      --font-sans:     'Inter', sans-serif;
+      --radius-sm:     6px;
+      --radius-md:     12px;
+      --radius-lg:     20px;
+      --shadow-cyan:   0 0 20px #00d4ff33, 0 0 40px #00d4ff11;
+      --shadow-card:   0 4px 24px #00000066;
+      --transition:    0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    ::selection { background: var(--cyan-dark); color: var(--cyan); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--cyan-dim); border-radius: 3px; }
+
+    section { padding: 100px 0; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--cyan);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-label::before {
+      content: '';
+      width: 32px; height: 2px;
+      background: var(--cyan);
+      display: inline-block;
+    }
+    .section-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #e2e8f0 0%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin-bottom: 60px;
+    }
+
+    /* NAVBAR */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(10,14,26,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+      transition: var(--transition);
+    }
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+    .nav-logo span { color: var(--text-secondary); font-weight: 400; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      transition: color var(--transition);
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: -4px; left: 0; right: 0;
+      height: 1px; background: var(--cyan);
+      transform: scaleX(0);
+      transition: transform var(--transition);
+    }
+    .nav-links a:hover { color: var(--cyan); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .nav-hamburger span { width: 22px; height: 2px; background: var(--text-primary); transition: var(--transition); border-radius: 1px; }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding-top: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-grid-bg {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    }
+    .hero-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(ellipse, rgba(0,212,255,0.08) 0%, transparent 70%);
+      border-radius: 50%;
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      pointer-events: none;
+      transition: transform 0.1s linear;
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+    }
+    .hero-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--cyan);
+      border: 1px solid var(--cyan);
+      padding: 4px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      background: rgba(0,212,255,0.05);
+      animation: fadeInDown 0.8s ease both;
+    }
+    .hero-title {
+      font-size: clamp(2.4rem, 7vw, 5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      animation: fadeInUp 0.9s 0.1s ease both;
+    }
+    .hero-title .highlight {
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--neon-blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-tagline {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--text-secondary);
+      max-width: 580px;
+      margin-bottom: 40px;
+      animation: fadeInUp 0.9s 0.2s ease both;
+    }
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--neon-blue) 100%);
+      color: #0a0e1a;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 14px 32px;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      transition: var(--transition);
+      animation: fadeInUp 0.9s 0.3s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,0.15);
+      transform: translateX(-100%);
+      transition: transform 0.4s ease;
+    }
+    .hero-cta:hover::before { transform: translateX(0); }
+    .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,212,255,0.4); }
+    .hero-cta svg { width: 18px; height: 18px; }
+
+    /* BOARD */
+    .board-wrapper {
+      position: relative;
+      margin: 50px 0 40px;
+      animation: fadeInUp 1s 0.4s ease both;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+    .board-svg-container {
+      position: relative;
+      width: 560px;
+      max-width: 100%;
+    }
+    /* BOARD IMAGE */
+    .board-img-container {
+      position: relative;
+      width: 700px;
+      max-width: 100%;
+    }
+    .board-img-frame {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid rgba(0,212,255,0.25);
+      box-shadow: 0 0 40px rgba(0,212,255,0.2), 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .board-real-img {
+      width: 100%;
+      display: block;
+      border-radius: var(--radius-lg);
+      transition: transform 0.4s ease;
+    }
+    .board-img-frame:hover .board-real-img { transform: scale(1.015); }
+    .board-img-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,212,255,0.04), transparent 60%);
+      pointer-events: none;
+    }
+    .board-svg { width: 100%; filter: drop-shadow(0 0 30px rgba(0,212,255,0.3)); }
+    /* Hero actions row */
+    .hero-actions {
+      display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 6px;
+    }
+    .hero-cta-outline {
+      display: inline-flex; align-items: center; gap: 10px;
+      border: 2px solid var(--cyan);
+      color: var(--cyan);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 12px 28px;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      transition: var(--transition);
+      background: rgba(0,212,255,0.05);
+      animation: fadeInUp 0.9s 0.35s ease both;
+    }
+    .hero-cta-outline:hover {
+      background: rgba(0,212,255,0.12);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0,212,255,0.25);
+    }
+    .board-tooltip {
+      position: absolute;
+      background: rgba(10,14,26,0.96);
+      border: 1px solid var(--cyan);
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      font-size: 0.78rem;
+      color: var(--text-primary);
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 100;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.2s, transform 0.2s;
+      box-shadow: 0 0 20px rgba(0,212,255,0.3);
+    }
+    .board-tooltip strong { color: var(--cyan); display: block; margin-bottom: 3px; font-size: 0.82rem; }
+    .board-hotspot { cursor: pointer; }
+
+    /* SCROLL ANIMATIONS */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-left {
+      opacity: 0; transform: translateX(-30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-right {
+      opacity: 0; transform: translateX(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* STATS */
+    #stats {
+      padding: 60px 0;
+      background: linear-gradient(135deg, #080d1a, #0a1225);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 0;
+    }
+    .stat-item {
+      text-align: center;
+      padding: 20px;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--neon-blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* ARCHITECTURE */
+    #architecture { background: var(--bg-secondary); }
+    .arch-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .arch-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 16px;
+      cursor: pointer;
+      position: relative;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+      overflow: visible;
+    }
+    .arch-block::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(0,212,255,0.04));
+      opacity: 0;
+      transition: opacity 0.3s;
+      border-radius: inherit;
+    }
+    .arch-block:hover { border-color: var(--cyan); box-shadow: var(--shadow-cyan); transform: translateY(-3px); }
+    .arch-block:hover::before { opacity: 1; }
+    .arch-block.core-block {
+      grid-column: 2 / 4;
+      background: linear-gradient(135deg, #0d1a2e, #0a1628);
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px rgba(0,212,255,0.15);
+    }
+    .arch-block.bus-block {
+      grid-column: 1 / 5;
+      background: linear-gradient(90deg, #0d1a2e, #111828, #0d1a2e);
+      border-color: #1e3a5a;
+    }
+    .arch-block-icon {
+      width: 32px; height: 32px;
+      margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--radius-sm);
+      font-size: 1.1rem;
+    }
+    .arch-block-title { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+    .arch-block-sub { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); }
+    .arch-info-card {
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background: rgba(10,14,26,0.98);
+      border: 1px solid var(--cyan);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      min-width: 230px;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+      box-shadow: 0 0 24px rgba(0,212,255,0.25);
+    }
+    .arch-block:hover .arch-info-card { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .arch-info-card h4 { font-size: 0.85rem; color: var(--cyan); margin-bottom: 8px; font-weight: 600; }
+    .arch-info-card p { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.6; }
+    .arch-info-card .tag {
+      display: inline-block;
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.3);
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-top: 8px;
+    }
+    .bus-arrow {
+      display: flex; align-items: center; justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+    .bus-line {
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cyan-dim), transparent, var(--cyan-dim));
+      margin: 0 10px;
+      position: relative;
+    }
+    .bus-line::after {
+      content: '';
+      position: absolute; right: 0; top: 50%;
+      transform: translateY(-50%);
+      border: 5px solid transparent;
+      border-left-color: var(--cyan-dim);
+    }
+
+    /* MEMORY */
+    #memory { background: var(--bg-primary); }
+    .memory-layout { display: flex; gap: 60px; align-items: flex-start; }
+    .memory-map { flex: 0 0 270px; position: relative; }
+    .memory-bar-wrapper {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--bg-card);
+    }
+    .memory-segment {
+      width: 100%;
+      position: relative;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      transition: filter 0.3s;
+    }
+    .memory-segment:last-child { border-bottom: none; }
+    .memory-segment-fill {
+      position: absolute; inset: 0;
+      transform-origin: bottom;
+      transform: scaleY(0);
+      transition: transform 1s cubic-bezier(0.4,0,0.2,1);
+    }
+    .memory-segment.animated .memory-segment-fill { transform: scaleY(1); }
+    .memory-segment-content {
+      position: relative; z-index: 2;
+      padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .memory-segment-name { font-weight: 600; font-size: 0.85rem; }
+    .memory-segment-addr { font-family: var(--font-mono); font-size: 0.7rem; color: rgba(255,255,255,0.45); }
+    .memory-segment-size { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; }
+
+    .memory-segment:hover { filter: brightness(1.2); }
+    .memory-hover-detail {
+      position: absolute;
+      right: calc(100% + 16px);
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(10,14,26,0.98);
+      border: 1px solid var(--cyan);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      width: 210px;
+      z-index: 20;
+      box-shadow: 0 0 16px rgba(0,212,255,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      line-height: 1.7;
+    }
+    .memory-segment:hover .memory-hover-detail { opacity: 1; }
+
+    .seg-reserved .memory-segment-fill  { background: #1e2433; }
+    .seg-periph   .memory-segment-fill  { background: linear-gradient(180deg, #3d1a4a, #2a1235); }
+    .seg-sram     .memory-segment-fill  { background: linear-gradient(180deg, #1a3a4a, #0d2233); }
+    .seg-flash    .memory-segment-fill  { background: linear-gradient(180deg, #003a4a, #002233); }
+    .seg-system   .memory-segment-fill  { background: linear-gradient(180deg, #1a2a1a, #0d1a0d); }
+    .seg-reserved .memory-segment-name  { color: var(--text-muted); }
+    .seg-periph   .memory-segment-name  { color: #b06fdc; }
+    .seg-sram     .memory-segment-name  { color: var(--cyan); }
+    .seg-flash    .memory-segment-name  { color: var(--green); }
+    .seg-system   .memory-segment-name  { color: var(--orange); }
+    .seg-reserved .memory-segment-size  { color: var(--text-muted); }
+    .seg-periph   .memory-segment-size  { color: #b06fdc; }
+    .seg-sram     .memory-segment-size  { color: var(--cyan); }
+    .seg-flash    .memory-segment-size  { color: var(--green); }
+    .seg-system   .memory-segment-size  { color: var(--orange); }
+
+    .memory-info { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+    .memory-info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .memory-info-card:hover { border-color: var(--cyan); box-shadow: 0 0 20px rgba(0,212,255,0.1); }
+    .memory-info-card h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .mem-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .memory-info-card p { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.7; }
+    .mono-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      background: rgba(0,212,255,0.08);
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: var(--cyan);
+    }
+
+    /* PROGRAMMING */
+    #programming { background: var(--bg-secondary); }
+    .tabs-container { width: 100%; }
+    .tab-buttons {
+      display: flex; gap: 4px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 6px;
+      margin-bottom: 28px;
+      width: fit-content;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 10px 22px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--neon-blue) 100%);
+      color: #0a0e1a;
+      font-weight: 700;
+    }
+    .tab-content { display: none; animation: tabSlide 0.35s cubic-bezier(0.4,0,0.2,1) both; }
+    .tab-content.active { display: block; }
+    @keyframes tabSlide {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .prog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .code-block {
+      background: #050810;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .code-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 18px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+    }
+    .code-header-left { display: flex; align-items: center; gap: 8px; }
+    .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .code-dots { display: flex; gap: 6px; }
+    .code-filename { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-left: 6px; }
+    .code-lang-badge { font-family: var(--font-mono); font-size: 0.65rem; color: var(--cyan); border: 1px solid rgba(0,212,255,0.3); padding: 2px 10px; border-radius: 10px; }
+    pre {
+      padding: 24px;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.85;
+      background: transparent;
+      color: #c9d1e0;
+    }
+    .kw  { color: #c792ea; font-weight: 500; }
+    .fn  { color: #82aaff; }
+    .str { color: #c3e88d; }
+    .num { color: #f78c6c; }
+    .cmt { color: #546e7a; font-style: italic; }
+    .pre { color: #89ddff; }
+    .typ { color: #ffcb6b; }
+
+    .wiring-diagram {
+      background: #050810;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      grid-column: 1 / -1;
+    }
+    .wiring-title { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .wiring-title::before { content: ''; width: 4px; height: 16px; background: var(--cyan); border-radius: 2px; }
+    .wiring-table { width: 100%; border-collapse: collapse; }
+    .wiring-table th { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); text-align: left; padding: 8px 14px; border-bottom: 1px solid var(--border); font-family: var(--font-mono); letter-spacing: 0.05em; }
+    .wiring-table td { font-size: 0.8rem; padding: 10px 14px; border-bottom: 1px solid rgba(30,45,69,0.5); font-family: var(--font-mono); }
+    .wiring-table tr:last-child td { border-bottom: none; }
+    .pin-color { display: flex; align-items: center; gap: 8px; }
+    .pin-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .wire-swdio { color: #82aaff; }
+    .wire-swclk { color: var(--green); }
+    .wire-gnd   { color: var(--text-muted); }
+    .wire-vcc   { color: #ff6b6b; }
+    .wire-tx    { color: var(--orange); }
+    .wire-rx    { color: var(--yellow); }
+
+    footer { padding: 40px 24px; text-align: center; border-top: 1px solid var(--border); }
+    footer p { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); }
+    footer a { color: var(--cyan); text-decoration: none; }
+
+    /* PINOUT SECTION */
+    .pinout-wrapper {
+      display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap;
+    }
+    .pinout-link {
+      position: relative;
+      flex: 1;
+      min-width: 300px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: block;
+      border: 1px solid var(--border);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .pinout-link:hover {
+      border-color: var(--cyan);
+      box-shadow: var(--shadow-cyan);
+    }
+    .pinout-img {
+      width: 100%;
+      display: block;
+      border-radius: var(--radius-lg);
+      transition: transform 0.4s ease;
+    }
+    .pinout-link:hover .pinout-img { transform: scale(1.01); }
+    .pinout-overlay {
+      position: absolute; bottom: 12px; right: 14px;
+      background: rgba(10,14,26,0.85);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      font-size: 0.75rem;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      pointer-events: none;
+    }
+    .pinout-placeholder {
+      min-height: 200px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px;
+      background: var(--bg-card);
+      text-align: center; padding: 30px;
+      font-size: 0.9rem; color: var(--text-secondary);
+    }
+    .pinout-legend {
+      flex: 0 0 260px;
+      display: flex; flex-direction: column; gap: 14px;
+      padding-top: 8px;
+    }
+    .legend-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .legend-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+    .legend-item strong { color: var(--text-primary); }
+
+    /* ST-LINK V2 GUIDE */
+    #stlink { background: var(--bg-primary); }
+    .stlink-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    .stlink-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .stlink-card:hover { border-color: var(--cyan); box-shadow: var(--shadow-cyan); }
+    .stlink-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--cyan);
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .stlink-card h3 .step-num {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--cyan), var(--neon-blue));
+      color: #0a0e1a;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .stlink-card p, .stlink-card li {
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .stlink-card ul { padding-left: 18px; }
+    .stlink-card code {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      background: rgba(0,212,255,0.08);
+      color: var(--cyan);
+      padding: 1px 7px;
+      border-radius: 4px;
+    }
+    .stlink-connection {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .stlink-connection h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .stlink-connection h3::before {
+      content: '';
+      width: 4px; height: 18px;
+      background: var(--cyan);
+      border-radius: 2px;
+    }
+    .conn-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 24px;
+      background: #050810;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .conn-device {
+      text-align: center;
+      flex: 0 0 140px;
+    }
+    .conn-device-box {
+      background: var(--bg-card-2);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .conn-device-box.stlink-box { border-color: var(--neon-blue); color: var(--neon-blue); box-shadow: 0 0 14px rgba(0,119,255,0.2); }
+    .conn-device-box.bluepill-box { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 14px rgba(0,212,255,0.2); }
+    .conn-device-label { font-size: 0.7rem; color: var(--text-muted); }
+    .conn-wires {
+      flex: 1;
+      min-width: 160px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .conn-wire {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+    }
+    .conn-wire-line {
+      flex: 1;
+      height: 2px;
+      border-radius: 1px;
+    }
+    .conn-wire-label-l, .conn-wire-label-r {
+      min-width: 60px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .conn-wire-label-r { text-align: right; }
+    .troubleshoot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .trouble-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--red);
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+    .trouble-item.warn { border-left-color: var(--orange); }
+    .trouble-item.ok   { border-left-color: var(--green); }
+    .trouble-item h4 { font-size: 0.82rem; color: var(--text-primary); margin-bottom: 8px; }
+    .trouble-item p  { font-size: 0.77rem; color: var(--text-secondary); line-height: 1.6; }
+
+    @media (max-width: 900px) {
+      .stlink-grid { grid-template-columns: 1fr; }
+      .troubleshoot-grid { grid-template-columns: 1fr; }
+      .pinout-legend { flex: unset; width: 100%; }
+    }
+
+      .arch-grid { grid-template-columns: repeat(2, 1fr); }
+      .arch-block.core-block { grid-column: 1 / 3; }
+      .arch-block.bus-block  { grid-column: 1 / 3; }
+      .memory-layout { flex-direction: column; }
+      .memory-map { flex: unset; width: 100%; }
+      .memory-hover-detail { display: none; }
+      .prog-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); }
+      .stat-item:nth-child(3) { border-right: none; }
+    }
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .stat-item:nth-child(2), .stat-item:nth-child(4), .stat-item:nth-child(6) { border-right: none; }
+      .arch-grid { grid-template-columns: 1fr; }
+      .arch-block.core-block, .arch-block.bus-block { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a class="nav-logo" href="#">STM32<span>F103C8T6</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#hero">Overview</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#memory">Memory</a></li>
+    <li><a href="#pinout">Pinout</a></li>
+    <li><a href="#programming">Programming</a></li>
+    <li><a href="#stlink">ST-Link V2</a></li>
+    <li><a href="stm32f103c8 (1).pdf" target="_blank" style="color:var(--cyan);border:1px solid var(--cyan);padding:4px 12px;border-radius:20px;font-size:0.78rem">📄 Datasheet</a></li>
+  </ul>
+  <div class="nav-hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow" id="heroGlow"></div>
+
+  <div class="hero-content container">
+    <div class="hero-badge">ARM Cortex-M3 &nbsp;·&nbsp; 32-Bit MCU</div>
+
+    <h1 class="hero-title">
+      The <span class="highlight">STM32F103C8T6</span><br>Blue Pill Board
+    </h1>
+    <p class="hero-tagline">
+      72 MHz of raw embedded performance — open-source, breadboard-friendly,
+      and beloved by makers and engineers worldwide.
+    </p>
+
+    <!-- BOARD IMAGE -->
+    <div class="board-wrapper">
+      <div class="board-img-container" id="boardContainer">
+        <div class="board-img-frame">
+          <img src="stm32-board.png"
+               onerror="this.onerror=null;this.parentElement.innerHTML=svgFallback()"
+               id="boardImg"
+               class="board-real-img"
+               alt="STM32F103C8T6 Blue Pill Board"
+          />
+          <div class="board-img-overlay"></div>
+        </div>
+        <!-- SVG fallback rendered inline if image missing -->
+        <svg id="boardSvgFallback" class="board-svg" viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg"
+             role="img" aria-label="STM32F103C8T6 Blue Pill Board Diagram" style="display:none">
+          <defs>
+            <linearGradient id="pcbGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#0d2040"/>
+              <stop offset="100%" stop-color="#091530"/>
+            </linearGradient>
+            <linearGradient id="chipGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#1a2840"/>
+              <stop offset="100%" stop-color="#0d1e30"/>
+            </linearGradient>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="2.5" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- PCB body -->
+          <rect x="10" y="20" width="540" height="160" rx="8" fill="url(#pcbGrad)" stroke="#1a4060" stroke-width="1.5"/>
+          <rect x="10" y="20" width="540" height="160" rx="8" fill="none" stroke="rgba(0,212,255,0.2)" stroke-width="0.5"/>
+          <text x="285" y="13" text-anchor="middle" fill="rgba(0,212,255,0.25)" font-size="7.5" font-family="JetBrains Mono,monospace" letter-spacing="3">BLUEPILL v2.0</text>
+          <text x="285" y="196" text-anchor="middle" fill="rgba(0,212,255,0.18)" font-size="6.5" font-family="JetBrains Mono,monospace">STM32F103C8T6</text>
+
+          <!-- Header pins top -->
+          <g fill="#c8a040" stroke="#a07830" stroke-width="0.5">
+            <rect x="40" y="14" width="6" height="12" rx="1"/><rect x="52" y="14" width="6" height="12" rx="1"/>
+            <rect x="64" y="14" width="6" height="12" rx="1"/><rect x="76" y="14" width="6" height="12" rx="1"/>
+            <rect x="88" y="14" width="6" height="12" rx="1"/><rect x="100" y="14" width="6" height="12" rx="1"/>
+            <rect x="112" y="14" width="6" height="12" rx="1"/><rect x="124" y="14" width="6" height="12" rx="1"/>
+            <rect x="136" y="14" width="6" height="12" rx="1"/><rect x="148" y="14" width="6" height="12" rx="1"/>
+            <rect x="160" y="14" width="6" height="12" rx="1"/><rect x="172" y="14" width="6" height="12" rx="1"/>
+            <rect x="184" y="14" width="6" height="12" rx="1"/><rect x="196" y="14" width="6" height="12" rx="1"/>
+            <rect x="208" y="14" width="6" height="12" rx="1"/><rect x="220" y="14" width="6" height="12" rx="1"/>
+            <rect x="232" y="14" width="6" height="12" rx="1"/>
+          </g>
+          <!-- Header pins bottom -->
+          <g fill="#c8a040" stroke="#a07830" stroke-width="0.5">
+            <rect x="40" y="174" width="6" height="12" rx="1"/><rect x="52" y="174" width="6" height="12" rx="1"/>
+            <rect x="64" y="174" width="6" height="12" rx="1"/><rect x="76" y="174" width="6" height="12" rx="1"/>
+            <rect x="88" y="174" width="6" height="12" rx="1"/><rect x="100" y="174" width="6" height="12" rx="1"/>
+            <rect x="112" y="174" width="6" height="12" rx="1"/><rect x="124" y="174" width="6" height="12" rx="1"/>
+            <rect x="136" y="174" width="6" height="12" rx="1"/><rect x="148" y="174" width="6" height="12" rx="1"/>
+            <rect x="160" y="174" width="6" height="12" rx="1"/><rect x="172" y="174" width="6" height="12" rx="1"/>
+            <rect x="184" y="174" width="6" height="12" rx="1"/><rect x="196" y="174" width="6" height="12" rx="1"/>
+            <rect x="208" y="174" width="6" height="12" rx="1"/><rect x="220" y="174" width="6" height="12" rx="1"/>
+            <rect x="232" y="174" width="6" height="12" rx="1"/>
+          </g>
+          <!-- Right header pins top -->
+          <g fill="#c8a040" stroke="#a07830" stroke-width="0.5">
+            <rect x="318" y="14" width="6" height="12" rx="1"/><rect x="330" y="14" width="6" height="12" rx="1"/>
+            <rect x="342" y="14" width="6" height="12" rx="1"/><rect x="354" y="14" width="6" height="12" rx="1"/>
+            <rect x="366" y="14" width="6" height="12" rx="1"/><rect x="378" y="14" width="6" height="12" rx="1"/>
+            <rect x="390" y="14" width="6" height="12" rx="1"/><rect x="402" y="14" width="6" height="12" rx="1"/>
+            <rect x="414" y="14" width="6" height="12" rx="1"/><rect x="426" y="14" width="6" height="12" rx="1"/>
+            <rect x="438" y="14" width="6" height="12" rx="1"/><rect x="450" y="14" width="6" height="12" rx="1"/>
+            <rect x="462" y="14" width="6" height="12" rx="1"/><rect x="474" y="14" width="6" height="12" rx="1"/>
+            <rect x="486" y="14" width="6" height="12" rx="1"/><rect x="498" y="14" width="6" height="12" rx="1"/>
+            <rect x="510" y="14" width="6" height="12" rx="1"/>
+          </g>
+          <!-- Right header pins bottom -->
+          <g fill="#c8a040" stroke="#a07830" stroke-width="0.5">
+            <rect x="318" y="174" width="6" height="12" rx="1"/><rect x="330" y="174" width="6" height="12" rx="1"/>
+            <rect x="342" y="174" width="6" height="12" rx="1"/><rect x="354" y="174" width="6" height="12" rx="1"/>
+            <rect x="366" y="174" width="6" height="12" rx="1"/><rect x="378" y="174" width="6" height="12" rx="1"/>
+            <rect x="390" y="174" width="6" height="12" rx="1"/><rect x="402" y="174" width="6" height="12" rx="1"/>
+            <rect x="414" y="174" width="6" height="12" rx="1"/><rect x="426" y="174" width="6" height="12" rx="1"/>
+            <rect x="438" y="174" width="6" height="12" rx="1"/><rect x="450" y="174" width="6" height="12" rx="1"/>
+            <rect x="462" y="174" width="6" height="12" rx="1"/><rect x="474" y="174" width="6" height="12" rx="1"/>
+            <rect x="486" y="174" width="6" height="12" rx="1"/><rect x="498" y="174" width="6" height="12" rx="1"/>
+            <rect x="510" y="174" width="6" height="12" rx="1"/>
+          </g>
+
+          <!-- MCU CHIP -->
+          <g class="board-hotspot" id="hs-chip"
+             data-tip-title="STM32F103C8T6 MCU"
+             data-tip-desc="ARM Cortex-M3 @ 72 MHz · 64 KB Flash · 20 KB SRAM · 48-pin LQFP">
+            <rect x="215" y="50" width="130" height="100" rx="4" fill="url(#chipGrad)" stroke="#2a5070" stroke-width="1.5" filter="url(#glow)"/>
+            <rect x="216" y="51" width="128" height="98" rx="3" fill="none" stroke="rgba(0,212,255,0.12)" stroke-width="0.5"/>
+            <!-- chip pins left -->
+            <g fill="#c8a040">
+              <rect x="203" y="60" width="10" height="4" rx="1"/><rect x="203" y="68" width="10" height="4" rx="1"/>
+              <rect x="203" y="76" width="10" height="4" rx="1"/><rect x="203" y="84" width="10" height="4" rx="1"/>
+              <rect x="203" y="92" width="10" height="4" rx="1"/><rect x="203" y="100" width="10" height="4" rx="1"/>
+              <rect x="203" y="108" width="10" height="4" rx="1"/><rect x="203" y="116" width="10" height="4" rx="1"/>
+              <rect x="203" y="124" width="10" height="4" rx="1"/><rect x="203" y="132" width="10" height="4" rx="1"/>
+            </g>
+            <!-- chip pins right -->
+            <g fill="#c8a040">
+              <rect x="347" y="60" width="10" height="4" rx="1"/><rect x="347" y="68" width="10" height="4" rx="1"/>
+              <rect x="347" y="76" width="10" height="4" rx="1"/><rect x="347" y="84" width="10" height="4" rx="1"/>
+              <rect x="347" y="92" width="10" height="4" rx="1"/><rect x="347" y="100" width="10" height="4" rx="1"/>
+              <rect x="347" y="108" width="10" height="4" rx="1"/><rect x="347" y="116" width="10" height="4" rx="1"/>
+              <rect x="347" y="124" width="10" height="4" rx="1"/><rect x="347" y="132" width="10" height="4" rx="1"/>
+            </g>
+            <!-- chip pins top -->
+            <g fill="#c8a040">
+              <rect x="228" y="38" width="4" height="10" rx="1"/><rect x="238" y="38" width="4" height="10" rx="1"/>
+              <rect x="248" y="38" width="4" height="10" rx="1"/><rect x="258" y="38" width="4" height="10" rx="1"/>
+              <rect x="268" y="38" width="4" height="10" rx="1"/><rect x="278" y="38" width="4" height="10" rx="1"/>
+              <rect x="288" y="38" width="4" height="10" rx="1"/><rect x="298" y="38" width="4" height="10" rx="1"/>
+              <rect x="308" y="38" width="4" height="10" rx="1"/><rect x="318" y="38" width="4" height="10" rx="1"/>
+              <rect x="328" y="38" width="4" height="10" rx="1"/>
+            </g>
+            <!-- chip pins bottom -->
+            <g fill="#c8a040">
+              <rect x="228" y="152" width="4" height="10" rx="1"/><rect x="238" y="152" width="4" height="10" rx="1"/>
+              <rect x="248" y="152" width="4" height="10" rx="1"/><rect x="258" y="152" width="4" height="10" rx="1"/>
+              <rect x="268" y="152" width="4" height="10" rx="1"/><rect x="278" y="152" width="4" height="10" rx="1"/>
+              <rect x="288" y="152" width="4" height="10" rx="1"/><rect x="298" y="152" width="4" height="10" rx="1"/>
+              <rect x="308" y="152" width="4" height="10" rx="1"/><rect x="318" y="152" width="4" height="10" rx="1"/>
+              <rect x="328" y="152" width="4" height="10" rx="1"/>
+            </g>
+            <!-- pin 1 marker -->
+            <circle cx="222" cy="57" r="2.5" fill="rgba(0,212,255,0.7)"/>
+            <!-- chip labels -->
+            <text x="280" y="90" text-anchor="middle" fill="rgba(0,212,255,0.8)" font-size="9" font-family="JetBrains Mono,monospace" font-weight="bold">STM32F103</text>
+            <text x="280" y="102" text-anchor="middle" fill="rgba(0,212,255,0.55)" font-size="7.5" font-family="JetBrains Mono,monospace">C8T6</text>
+            <text x="280" y="114" text-anchor="middle" fill="rgba(100,180,255,0.35)" font-size="6.5" font-family="JetBrains Mono,monospace">ARM Cortex-M3</text>
+            <!-- pulse ring -->
+            <circle cx="280" cy="100" r="54" fill="none" stroke="rgba(0,212,255,0.5)" stroke-width="1">
+              <animate attributeName="r" from="54" to="74" dur="2s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" from="0.5" to="0" dur="2s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+
+          <!-- 8 MHz CRYSTAL -->
+          <g class="board-hotspot" id="hs-xtal"
+             data-tip-title="8 MHz HSE Crystal"
+             data-tip-desc="Main system clock for PLL · Enables 72 MHz operation via PLL × 9">
+            <rect x="100" y="68" width="38" height="20" rx="3" fill="#1a3a30" stroke="#2a6a50" stroke-width="1.2"/>
+            <rect x="100" y="68" width="38" height="20" rx="3" fill="none" stroke="rgba(0,255,136,0.18)"/>
+            <line x1="96" y1="76" x2="100" y2="76" stroke="#c8a040" stroke-width="1.8"/>
+            <line x1="138" y1="76" x2="142" y2="76" stroke="#c8a040" stroke-width="1.8"/>
+            <line x1="96" y1="80" x2="100" y2="80" stroke="#c8a040" stroke-width="1.8"/>
+            <line x1="138" y1="80" x2="142" y2="80" stroke="#c8a040" stroke-width="1.8"/>
+            <text x="119" y="82" text-anchor="middle" fill="rgba(0,255,136,0.75)" font-size="6" font-family="JetBrains Mono,monospace">8 MHz</text>
+            <circle cx="119" cy="78" r="6" fill="none" stroke="rgba(0,255,136,0.4)" stroke-width="0.8">
+              <animate attributeName="r" from="9" to="20" dur="2.2s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" from="0.5" to="0" dur="2.2s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+
+          <!-- RTC CRYSTAL -->
+          <g class="board-hotspot" id="hs-rtc"
+             data-tip-title="32.768 kHz RTC Crystal"
+             data-tip-desc="Low-speed external clock · Powers the STM32 real-time clock (RTC)">
+            <rect x="100" y="110" width="38" height="20" rx="3" fill="#1a2030" stroke="#2a3060" stroke-width="1.2"/>
+            <line x1="96" y1="118" x2="100" y2="118" stroke="#c8a040" stroke-width="1.8"/>
+            <line x1="138" y1="118" x2="142" y2="118" stroke="#c8a040" stroke-width="1.8"/>
+            <line x1="96" y1="122" x2="100" y2="122" stroke="#c8a040" stroke-width="1.8"/>
+            <line x1="138" y1="122" x2="142" y2="122" stroke="#c8a040" stroke-width="1.8"/>
+            <text x="119" y="124" text-anchor="middle" fill="rgba(130,170,255,0.75)" font-size="5" font-family="JetBrains Mono,monospace">32.768k</text>
+            <circle cx="119" cy="120" r="6" fill="none" stroke="rgba(130,170,255,0.4)" stroke-width="0.8">
+              <animate attributeName="r" from="9" to="20" dur="3s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" from="0.45" to="0" dur="3s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+
+          <!-- MICRO-USB -->
+          <g class="board-hotspot" id="hs-usb"
+             data-tip-title="Micro-USB Port"
+             data-tip-desc="USB 2.0 Full-Speed 12 Mbps · Powers board · DFU bootloader upload">
+            <rect x="16" y="78" width="26" height="44" rx="4" fill="#2a2a38" stroke="#4a4a62" stroke-width="1.2"/>
+            <rect x="20" y="82" width="18" height="36" rx="2" fill="#1a1a26"/>
+            <rect x="22" y="84" width="14" height="8" rx="1" fill="#252535"/>
+            <text x="29" y="108" text-anchor="middle" fill="rgba(200,200,255,0.6)" font-size="5.5" font-family="JetBrains Mono,monospace">USB</text>
+            <circle cx="29" cy="100" r="8" fill="none" stroke="rgba(180,140,255,0.5)" stroke-width="0.8">
+              <animate attributeName="r" from="12" to="24" dur="2.5s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" from="0.5" to="0" dur="2.5s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+
+          <!-- RESET BUTTON -->
+          <g class="board-hotspot" id="hs-reset"
+             data-tip-title="NRST Reset Button"
+             data-tip-desc="Active-low hardware reset · Reinitializes CPU and all peripherals">
+            <rect x="160" y="156" width="26" height="16" rx="3" fill="#2a1515" stroke="#6a3030" stroke-width="1.2"/>
+            <rect x="165" y="159" width="16" height="10" rx="2" fill="#3a1010"/>
+            <circle cx="173" cy="164" r="4.5" fill="#8a2020"/>
+            <circle cx="173" cy="164" r="2.5" fill="#aa2020"/>
+            <text x="173" y="153" text-anchor="middle" fill="rgba(255,100,100,0.6)" font-size="5.5" font-family="JetBrains Mono,monospace">RST</text>
+            <circle cx="173" cy="164" r="8" fill="none" stroke="rgba(255,80,80,0.5)" stroke-width="0.8">
+              <animate attributeName="r" from="7" to="16" dur="3s" begin="1s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" from="0.5" to="0" dur="3s" begin="1s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+
+          <!-- BOOT JUMPERS -->
+          <g class="board-hotspot" id="hs-boot"
+             data-tip-title="BOOT0 / BOOT1 Jumpers"
+             data-tip-desc="BOOT0=0,BOOT1=0: Flash boot | BOOT0=1,BOOT1=0: ST Bootloader | BOOT0=1,BOOT1=1: SRAM">
+            <!-- BOOT0 -->
+            <rect x="60" y="158" width="22" height="14" rx="2" fill="#151a30" stroke="#303060" stroke-width="1"/>
+            <rect x="63" y="161" width="6" height="8" rx="1" fill="#202050"/><rect x="71" y="161" width="6" height="8" rx="1" fill="#202050"/>
+            <rect x="64" y="163" width="12" height="4" rx="1" fill="#3a3a7a" opacity="0.9"/>
+            <text x="71" y="154" text-anchor="middle" fill="rgba(130,150,255,0.65)" font-size="5" font-family="JetBrains Mono,monospace">BOOT0</text>
+            <!-- BOOT1 -->
+            <rect x="86" y="158" width="22" height="14" rx="2" fill="#151a30" stroke="#303060" stroke-width="1"/>
+            <rect x="89" y="161" width="6" height="8" rx="1" fill="#202050"/><rect x="97" y="161" width="6" height="8" rx="1" fill="#202050"/>
+            <text x="97" y="154" text-anchor="middle" fill="rgba(130,150,255,0.65)" font-size="5" font-family="JetBrains Mono,monospace">BOOT1</text>
+            <circle cx="82" cy="165" r="10" fill="none" stroke="rgba(130,150,255,0.45)" stroke-width="0.8">
+              <animate attributeName="r" from="14" to="28" dur="3.5s" begin="0.5s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" from="0.4" to="0" dur="3.5s" begin="0.5s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+
+          <!-- PWR LED -->
+          <g>
+            <circle cx="60" cy="50" r="5" fill="#001200" stroke="#003300" stroke-width="0.8"/>
+            <circle cx="60" cy="50" r="3" fill="#00cc00">
+              <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <text x="60" y="42" text-anchor="middle" fill="rgba(0,200,0,0.5)" font-size="4.5" font-family="JetBrains Mono,monospace">PWR</text>
+          </g>
+
+          <!-- PC13 LED -->
+          <g>
+            <circle cx="76" cy="50" r="5" fill="#1a0000" stroke="#330000" stroke-width="0.8"/>
+            <circle cx="76" cy="50" r="3" fill="#cc0000">
+              <animate attributeName="opacity" values="0.3;0.95;0.3" dur="1s" repeatCount="indefinite"/>
+            </circle>
+            <text x="76" y="42" text-anchor="middle" fill="rgba(200,50,50,0.5)" font-size="4" font-family="JetBrains Mono,monospace">PC13</text>
+          </g>
+
+          <!-- 3.3V LDO -->
+          <g>
+            <rect x="418" y="78" width="30" height="44" rx="3" fill="#1a1a0d" stroke="#4a4a20" stroke-width="1"/>
+            <text x="433" y="99" text-anchor="middle" fill="rgba(255,200,0,0.65)" font-size="5.5" font-family="JetBrains Mono,monospace">3V3</text>
+            <text x="433" y="109" text-anchor="middle" fill="rgba(255,200,0,0.4)" font-size="5" font-family="JetBrains Mono,monospace">LDO</text>
+          </g>
+
+          <!-- Decoupling caps -->
+          <g fill="#0d2030" stroke="#1a4050" stroke-width="0.8">
+            <rect x="155" y="44" width="14" height="9" rx="1.5"/><rect x="173" y="44" width="14" height="9" rx="1.5"/>
+            <rect x="155" y="147" width="14" height="9" rx="1.5"/><rect x="173" y="147" width="14" height="9" rx="1.5"/>
+            <rect x="370" y="44" width="14" height="9" rx="1.5"/><rect x="370" y="147" width="14" height="9" rx="1.5"/>
+          </g>
+
+          <!-- SWD pads -->
+          <g>
+            <rect x="460" y="152" width="10" height="7" rx="1" fill="#0d2030" stroke="#1a4050"/><rect x="474" y="152" width="10" height="7" rx="1" fill="#0d2030" stroke="#1a4050"/>
+            <rect x="488" y="152" width="10" height="7" rx="1" fill="#0d2030" stroke="#1a4050"/><rect x="502" y="152" width="10" height="7" rx="1" fill="#0d2030" stroke="#1a4050"/>
+            <text x="482" y="170" text-anchor="middle" fill="rgba(0,212,255,0.3)" font-size="5" font-family="JetBrains Mono,monospace">SWD</text>
+          </g>
+
+          <!-- PCB traces (decorative) -->
+          <g stroke="rgba(0,212,255,0.07)" stroke-width="0.8" fill="none">
+            <path d="M213 100 L148 100 L148 78 L142 78"/>
+            <path d="M213 118 L148 118 L148 120 L142 120"/>
+            <path d="M280 50 L280 30 L420 30 L420 78"/>
+            <path d="M280 152 L280 172"/>
+            <path d="M357 88 L418 88"/>
+          </g>
+
+        </svg>
+        <!-- Tooltip -->
+        <div class="board-tooltip" id="boardTooltip">
+          <strong id="tipTitle"></strong>
+          <span id="tipDesc"></span>
+        </div>
+      </div>
+    </div>
+    <!-- Hero action buttons -->
+    <div class="hero-actions">
+
+    <a href="#architecture" class="hero-cta" id="exploreBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12l4 4 4-4"/>
+      </svg>
+      Explore the Hardware
+    </a>
+    <a href="stm32f103c8 (1).pdf" target="_blank" class="hero-cta-outline">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+      </svg>
+      View Datasheet (PDF)
+    </a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div id="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item reveal"><div class="stat-value">72</div><div class="stat-label">MHz Max Clock</div></div>
+      <div class="stat-item reveal"><div class="stat-value">64K</div><div class="stat-label">Flash Memory</div></div>
+      <div class="stat-item reveal"><div class="stat-value">20K</div><div class="stat-label">SRAM</div></div>
+      <div class="stat-item reveal"><div class="stat-value">37</div><div class="stat-label">GPIO Pins</div></div>
+      <div class="stat-item reveal"><div class="stat-value">10</div><div class="stat-label">12-bit ADC Ch.</div></div>
+      <div class="stat-item reveal"><div class="stat-value">3.3V</div><div class="stat-label">Logic Level</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PINOUT SECTION -->
+<section id="pinout" style="background:var(--bg-secondary);padding:80px 0">
+  <div class="container">
+    <div class="section-label">01.5 — Pin Reference</div>
+    <h2 class="section-title reveal">Full Pinout Diagram</h2>
+    <p class="section-subtitle reveal">All 37 GPIO pins mapped with alternate functions — green = 5V tolerant, blue = 3.3V only. Click the image to open it full-size.</p>
+    <div class="pinout-wrapper reveal">
+      <a href="stm32-board.png" target="_blank" class="pinout-link">
+        <img src="stm32-board.png"
+             onerror="this.style.display='none';document.getElementById('pinout-placeholder').style.display='flex'"
+             alt="STM32F103C8T6 Full Pinout Diagram"
+             class="pinout-img"
+        />
+        <div id="pinout-placeholder" class="pinout-placeholder" style="display:none">
+          <span style="font-size:2rem">🖼️</span>
+          <p>Save your board image as <code style="color:var(--cyan)">stm32-board.png</code> in the project folder to display it here.</p>
+        </div>
+        <div class="pinout-overlay">🔍 Click to enlarge</div>
+      </a>
+      <div class="pinout-legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#4caf50"></span><strong>5V Tolerant GPIO</strong> — can safely receive 5V input signals</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#2196f3"></span><strong>3.3V Standard GPIO</strong> — 3.3V logic only, max 3.6V</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#ff9800"></span><strong>PWM Capable</strong> — Timer output compare channels</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#e91e63"></span><strong>Analog (ADC/DAC)</strong> — 12-bit ADC inputs (PA0–PA7, PB0–PB1)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#9c27b0"></span><strong>Alternate Functions</strong> — USART, SPI, I2C, CAN, USB</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architecture">
+  <div class="container">
+    <div class="section-label">02 — Internal Architecture</div>
+    <h2 class="section-title reveal">ARM Cortex-M3 Block Diagram</h2>
+    <p class="section-subtitle reveal">The STM32F103 is built around a Harvard-architecture Cortex-M3 core connected via a multi-layer bus matrix for concurrent DMA and CPU access. Hover any block to explore its specs.</p>
+
+    <div class="arch-grid" id="archGrid">
+
+      <div class="arch-block core-block reveal">
+        <div class="arch-info-card">
+          <h4>ARM Cortex-M3 Core</h4>
+          <p>32-bit RISC · Thumb-2 ISA · 1.25 DMIPS/MHz · Harvard architecture. NVIC with up to 43 maskable interrupt channels, configurable priority levels.</p>
+          <span class="tag">72 MHz · 90 DMIPS · Thumb-2</span>
+        </div>
+        <div class="arch-block-icon" style="background:rgba(0,212,255,0.1)">🧠</div>
+        <div class="arch-block-title" style="color:var(--cyan);font-size:1rem">ARM Cortex-M3</div>
+        <div class="arch-block-sub">32-bit · Thumb-2 · 72 MHz · NVIC</div>
+      </div>
+
+      <div class="arch-block reveal">
+        <div class="arch-info-card">
+          <h4>SWD / JTAG Debug</h4>
+          <p>2-wire Serial Wire Debug (SWDIO/SWCLK). ITM Trace via SWO pin. Supports real-time variable viewing without halting the core.</p>
+          <span class="tag">SWD 2-wire · JTAG 5-wire</span>
+        </div>
+        <div class="arch-block-icon" style="background:rgba(124,58,237,0.15)">🔍</div>
+        <div class="arch-block-title">SWD / JTAG</div>
+        <div class="arch-block-sub">Debug &amp; Trace Interface</div>
+      </div>
+
+      <div class="arch-block reveal">
+        <div class="arch-info-card">
+          <h4>Flash Memory Interface</h4>
+          <p>64 KB embedded Flash with 2-cycle read latency at 72 MHz. Supports 1 KB page erase, mass erase and write protection per sector.</p>
+          <span class="tag">64 KB · 10K erase cycles · 1KB pages</span>
+        </div>
+        <div class="arch-block-icon" style="background:rgba(0,255,136,0.1)">💾</div>
+        <div class="arch-block-title">Flash Memory</div>
+        <div class="arch-block-sub">64 KB · 0x0800_0000</div>
+      </div>
+
+      <div class="arch-block bus-block reveal">
+        <div class="arch-info-card">
+          <h4>Multi-Layer AHB Bus Matrix</h4>
+          <p>Allows DMA and CPU to access different buses simultaneously without arbitration delays. Connects ICode, DCode, System bus to AHB peripherals.</p>
+          <span class="tag">AHB @ 72 MHz · Multi-master</span>
+        </div>
+        <div class="bus-arrow">
+          <span>ICode Bus</span>
+          <div class="bus-line"></div>
+          <span style="color:var(--cyan);font-weight:600;font-size:0.8rem">AHB Multi-Layer Bus Matrix</span>
+          <div class="bus-line" style="background:linear-gradient(90deg,transparent,var(--cyan-dim))"></div>
+          <span>System Bus</span>
+        </div>
+      </div>
+
+      <div class="arch-block reveal">
+        <div class="arch-info-card">
+          <h4>AHB/APB1 Bridge</h4>
+          <p>Connects the 72 MHz AHB to the slower APB1 peripheral bus (max 36 MHz). Hosts USART2/3, I2C1/2, SPI2, CAN, USB registers.</p>
+          <span class="tag">APB1 ≤ 36 MHz</span>
+        </div>
+        <div class="arch-block-icon" style="background:rgba(255,140,0,0.1)">🔀</div>
+        <div class="arch-block-title">APB1 Bridge</div>
+        <div class="arch-block-sub">36 MHz · Low-speed bus</div>
+      </div>
+
+      <div class="arch-block reveal">
+        <div class="arch-info-card">
+          <h4>AHB/APB2 Bridge</h4>
+          <p>Connects to the high-speed APB2 bus running at 72 MHz. Hosts USART1, SPI1, ADC1/2, TIM1, AFIO, and all GPIO ports A–E.</p>
+          <span class="tag">APB2 ≤ 72 MHz</span>
+        </div>
+        <div class="arch-block-icon" style="background:rgba(255,140,0,0.1)">🔀</div>
+        <div class="arch-block-title">APB2 Bridge</div>
+        <div class="arch-block-sub">72 MHz · High-speed bus</div>
+      </div>
+
+      <div class="arch-block reveal">
+        <div class="arch-info-card">
+          <h4>DMA Controller</h4>
+          <p>Dual DMA controllers with 7+5 channels. Supports mem-to-mem, mem-to-peripheral, peripheral-to-mem. Circular mode for continuous ADC streaming.</p>
+          <span class="tag">12 channels · Circular mode</span>
+        </div>
+        <div class="arch-block-icon" style="background:rgba(0,119,255,0.1)">⚡</div>
+        <div class="arch-block-title">DMA1 / DMA2</div>
+        <div class="arch-block-sub">12 Channels · Direct access</div>
+      </div>
+
+      <div class="arch-block reveal">
+        <div class="arch-info-card">
+          <h4>Advanced Timer (TIM1)</h4>
+          <p>16-bit auto-reload counter with complementary PWM output pairs and programmable dead-time insertion. Up to 4 capture/compare channels. Ideal for motor control.</p>
+          <span class="tag">16-bit · 4 PWM CH · Dead-time</span>
+        </div>
+        <div class="arch-block-icon" style="background:rgba(255,51,102,0.1)">⏱</div>
+        <div class="arch-block-title">Advanced Timer</div>
+        <div class="arch-block-sub">TIM1 · 16-bit · Complementary PWM</div>
+      </div>
+
+      <div class="arch-block reveal">
+        <div class="arch-info-card">
+          <h4>General Purpose Timers</h4>
+          <p>TIM2–TIM4: 16-bit up/down/center-aligned counters with input capture, output compare, and PWM generation. One-pulse mode supported.</p>
+          <span class="tag">TIM2/3/4 · OC / IC / PWM</span>
+        </div>
+        <div class="arch-block-icon" style="background:rgba(255,51,102,0.1)">⏲</div>
+        <div class="arch-block-title">GP Timers × 3</div>
+        <div class="arch-block-sub">TIM2/3/4 · 16-bit</div>
+      </div>
+
+      <div class="arch-block reveal">
+        <div class="arch-info-card">
+          <h4>ADC1 / ADC2</h4>
+          <p>Dual 12-bit SAR ADCs with 10 external channels. Simultaneous/interleaved dual-ADC mode. Conversion time ≈ 1 µs at 12-bit. Injected channel support.</p>
+          <span class="tag">12-bit · ~1 µs · Dual mode</span>
+        </div>
+        <div class="arch-block-icon" style="background:rgba(0,255,136,0.1)">📊</div>
+        <div class="arch-block-title">ADC × 2</div>
+        <div class="arch-block-sub">12-bit · 10 ch · Dual mode</div>
+      </div>
+
+      <div class="arch-block reveal">
+        <div class="arch-info-card">
+          <h4>I²C Interfaces</h4>
+          <p>Two I²C peripherals (I2C1, I2C2). Standard (100 kHz), fast (400 kHz) modes and SMBus 2.0. 7-bit and 10-bit addressing, DMA-driven transfers.</p>
+          <span class="tag">100/400 kHz · SMBus 2.0</span>
+        </div>
+        <div class="arch-block-icon" style="background:rgba(0,212,255,0.1)">🔗</div>
+        <div class="arch-block-title">I²C × 2</div>
+        <div class="arch-block-sub">100/400 kHz · 7/10-bit</div>
+      </div>
+
+      <div class="arch-block reveal">
+        <div class="arch-info-card">
+          <h4>SPI / I²S Interfaces</h4>
+          <p>SPI1 (APB2) and SPI2 (APB1). Full-duplex synchronous, master/slave. NSS soft/hard. SPI2 doubles as I²S for digital audio streaming.</p>
+          <span class="tag">18 Mbps (SPI1) · I²S audio</span>
+        </div>
+        <div class="arch-block-icon" style="background:rgba(255,214,10,0.1)">📡</div>
+        <div class="arch-block-title">SPI / I²S × 2</div>
+        <div class="arch-block-sub">18 Mbps · Full-duplex</div>
+      </div>
+
+      <div class="arch-block reveal">
+        <div class="arch-info-card">
+          <h4>USART × 3</h4>
+          <p>Three USARTs (1–3) up to 4.5 Mbps. Supports LIN, IrDA, SmartCard protocols. Hardware flow control (RTS/CTS) on USART1 and USART3.</p>
+          <span class="tag">4.5 Mbps · LIN · IrDA</span>
+        </div>
+        <div class="arch-block-icon" style="background:rgba(124,58,237,0.15)">📶</div>
+        <div class="arch-block-title">USART × 3</div>
+        <div class="arch-block-sub">4.5 Mbps · LIN / SmartCard</div>
+      </div>
+
+      <div class="arch-block reveal">
+        <div class="arch-info-card">
+          <h4>USB Full-Speed / bxCAN</h4>
+          <p>USB 2.0 Full-Speed (12 Mbps) device with integrated transceiver and 512-byte shared SRAM. bxCAN 2.0A/B with 14 configurable filter banks, up to 1 Mbps.</p>
+          <span class="tag">USB 12 Mbps · CAN 1 Mbps</span>
+        </div>
+        <div class="arch-block-icon" style="background:rgba(200,160,255,0.1)">🔌</div>
+        <div class="arch-block-title">USB FS / CAN</div>
+        <div class="arch-block-sub">12 Mbps · bxCAN 2.0A/B</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- MEMORY -->
+<section id="memory">
+  <div class="container">
+    <div class="section-label">03 — Memory Map</div>
+    <h2 class="section-title reveal">STM32F103 Memory Layout</h2>
+    <p class="section-subtitle reveal">The Cortex-M3 uses a 4 GB flat address space. Each segment below is animated into view — hover to explore addresses and uses.</p>
+
+    <div class="memory-layout">
+      <div class="memory-map" id="memoryMap">
+        <div class="memory-bar-wrapper">
+
+          <div class="memory-segment seg-reserved" style="height:56px">
+            <div class="memory-segment-fill"></div>
+            <div class="memory-segment-content">
+              <span class="memory-segment-name">Private Peripheral Bus</span>
+              <span class="memory-segment-addr">0xE000_0000</span>
+              <span class="memory-segment-size">512 MB</span>
+            </div>
+            <div class="memory-hover-detail">
+              <strong>0xE000_0000 – 0xFFFF_FFFF</strong><br>
+              Cortex-M3 internal peripherals: NVIC, SysTick, DWT, ITM, FPB, ROM table.
+            </div>
+          </div>
+
+          <div class="memory-segment seg-reserved" style="height:40px">
+            <div class="memory-segment-fill"></div>
+            <div class="memory-segment-content">
+              <span class="memory-segment-name">External Device / FSMC</span>
+              <span class="memory-segment-addr">0xA000_0000</span>
+              <span class="memory-segment-size">1 GB</span>
+            </div>
+            <div class="memory-hover-detail">
+              <strong>0xA000_0000 – 0xDFFF_FFFF</strong><br>
+              External devices mapped via FSMC: NOR Flash, NAND, PSRAM.
+            </div>
+          </div>
+
+          <div class="memory-segment seg-periph" style="height:74px">
+            <div class="memory-segment-fill"></div>
+            <div class="memory-segment-content">
+              <span class="memory-segment-name">Peripheral Registers</span>
+              <span class="memory-segment-addr">0x4000_0000</span>
+              <span class="memory-segment-size">512 MB · APB1/APB2/AHB</span>
+            </div>
+            <div class="memory-hover-detail">
+              <strong>0x4000_0000 – 0x5FFF_FFFF</strong><br>
+              All on-chip peripherals: GPIO, USART, SPI, I2C, ADC, DMA, RCC, CRC. Each peripheral = 1 KB block.
+            </div>
+          </div>
+
+          <div class="memory-segment seg-sram" style="height:80px">
+            <div class="memory-segment-fill"></div>
+            <div class="memory-segment-content">
+              <span class="memory-segment-name">SRAM</span>
+              <span class="memory-segment-addr">0x2000_0000</span>
+              <span class="memory-segment-size">20 KB · Stack / Heap</span>
+            </div>
+            <div class="memory-hover-detail">
+              <strong>0x2000_0000 – 0x2000_4FFF</strong><br>
+              Stack grows ↓ from top. Heap grows ↑. .data and .bss sections loaded from Flash on startup. Bit-banding enabled.
+            </div>
+          </div>
+
+          <div class="memory-segment seg-flash" style="height:86px">
+            <div class="memory-segment-fill"></div>
+            <div class="memory-segment-content">
+              <span class="memory-segment-name">Flash Memory</span>
+              <span class="memory-segment-addr">0x0800_0000</span>
+              <span class="memory-segment-size">64 KB · Vector Table + Code</span>
+            </div>
+            <div class="memory-hover-detail">
+              <strong>0x0800_0000 – 0x0800_FFFF</strong><br>
+              Vector table at base, then .text (code), .rodata (constants). 128 × 512-byte erasable pages.
+            </div>
+          </div>
+
+          <div class="memory-segment seg-system" style="height:56px">
+            <div class="memory-segment-fill"></div>
+            <div class="memory-segment-content">
+              <span class="memory-segment-name">System Memory (Bootloader)</span>
+              <span class="memory-segment-addr">0x1FFF_F000</span>
+              <span class="memory-segment-size">2 KB · ST Factory ROM</span>
+            </div>
+            <div class="memory-hover-detail">
+              <strong>0x1FFF_F000 – 0x1FFF_F7FF</strong><br>
+              ST factory bootloader. Activate: BOOT0=1, BOOT1=0. Programs via USART1 or USB DFU.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="memory-info">
+        <div class="memory-info-card reveal-right" style="transition-delay:0.1s">
+          <h4><span class="mem-dot" style="background:var(--green)"></span>Flash Memory — 64 KB</h4>
+          <p>Starts at <span class="mono-tag">0x08000000</span> and spans 64 KB (128 × 512-byte pages). The first bytes hold the <strong>Vector Table</strong> — the initial stack pointer and reset handler address. Code executes directly from Flash at 72 MHz via the prefetch queue.</p>
+        </div>
+        <div class="memory-info-card reveal-right" style="transition-delay:0.2s">
+          <h4><span class="mem-dot" style="background:var(--cyan)"></span>SRAM — 20 KB</h4>
+          <p>Starts at <span class="mono-tag">0x20000000</span>. At reset, startup code copies initialized variables from Flash (<code>.data</code>) and zeroes the BSS section. Stack grows down from <span class="mono-tag">0x20005000</span>, heap grows upward. Supports Cortex-M3 bit-banding for atomic bit operations.</p>
+        </div>
+        <div class="memory-info-card reveal-right" style="transition-delay:0.3s">
+          <h4><span class="mem-dot" style="background:#b06fdc"></span>Peripheral Registers</h4>
+          <p>All peripherals memory-mapped from <span class="mono-tag">0x40000000</span>. APB1 at the base (USART2, I2C, SPI2, CAN), then APB2 (GPIO, ADC, SPI1, USART1, TIM1) and AHB (DMA, RCC, FLASH interface). Each register block is 1 KB.</p>
+        </div>
+        <div class="memory-info-card reveal-right" style="transition-delay:0.4s">
+          <h4><span class="mem-dot" style="background:var(--orange)"></span>System Memory — ST Bootloader</h4>
+          <p>2 KB ROM at <span class="mono-tag">0x1FFFF000</span> containing ST's factory-programmed bootloader. Activated by BOOT0=1, BOOT1=0 before reset. Programs via USART1 (or USB DFU) — no external probe required.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- PROGRAMMING -->
+<section id="programming">
+  <div class="container">
+    <div class="section-label">04 — Development Workflow</div>
+    <h2 class="section-title reveal">How to Program the Blue Pill</h2>
+    <p class="section-subtitle reveal">From bare-metal HAL to the Arduino ecosystem — the Blue Pill supports a wide range of development environments.</p>
+
+    <div class="tabs-container reveal">
+      <div class="tab-buttons" role="tablist">
+        <button class="tab-btn active" id="tab-stlink" role="tab" aria-selected="true" onclick="switchTab('stlink')">🔧 STM32CubeIDE + ST-Link V2</button>
+        <button class="tab-btn" id="tab-arduino" role="tab" aria-selected="false" onclick="switchTab('arduino')">🎯 Arduino IDE + UART</button>
+        <button class="tab-btn" id="tab-platformio" role="tab" aria-selected="false" onclick="switchTab('platformio')">🚀 PlatformIO + ST-Link</button>
+      </div>
+
+      <!-- TAB 1: STM32CubeIDE -->
+      <div class="tab-content active" id="tab-content-stlink">
+        <div class="prog-grid">
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-header-left">
+                <div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div>
+                <span class="code-filename">main.c — HAL Library</span>
+              </div>
+              <span class="code-lang-badge">C · HAL</span>
+            </div>
+            <pre><span class="cmt">/* STM32F103C8T6 — Blink PC13 LED */</span>
+<span class="cmt">/* STM32CubeIDE + STM32 HAL       */</span>
+<span class="pre">#include</span> <span class="str">"stm32f1xx_hal.h"</span>
+
+<span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {
+  <span class="fn">HAL_Init</span>();
+  <span class="fn">SystemClock_Config</span>();  <span class="cmt">// 72 MHz via PLL</span>
+
+  <span class="cmt">// Enable GPIOC peripheral clock</span>
+  __<span class="fn">HAL_RCC_GPIOC_CLK_ENABLE</span>();
+
+  GPIO_InitTypeDef gpio = {<span class="num">0</span>};
+  gpio.Pin   = <span class="typ">GPIO_PIN_13</span>;
+  gpio.Mode  = <span class="typ">GPIO_MODE_OUTPUT_PP</span>;
+  gpio.Speed = <span class="typ">GPIO_SPEED_FREQ_LOW</span>;
+  <span class="fn">HAL_GPIO_Init</span>(<span class="typ">GPIOC</span>, &amp;gpio);
+
+  <span class="kw">while</span> (<span class="num">1</span>) {
+    <span class="cmt">// PC13 is active-LOW on Blue Pill</span>
+    <span class="fn">HAL_GPIO_TogglePin</span>(<span class="typ">GPIOC</span>, <span class="typ">GPIO_PIN_13</span>);
+    <span class="fn">HAL_Delay</span>(<span class="num">500</span>);
+  }
+}</pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-header-left">
+                <div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div>
+                <span class="code-filename">main.c — Register-Level</span>
+              </div>
+              <span class="code-lang-badge">C · Bare-Metal</span>
+            </div>
+            <pre><span class="cmt">/* Register-level — no HAL overhead */</span>
+<span class="pre">#include</span> <span class="str">"stm32f103xb.h"</span>
+
+<span class="kw">static void</span> <span class="fn">delay</span>(<span class="kw">volatile uint32_t</span> n) {
+  <span class="kw">while</span> (n--);
+}
+
+<span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {
+  <span class="cmt">// Enable APB2 clock → GPIOC</span>
+  RCC-&gt;APB2ENR |= RCC_APB2ENR_IOPCEN;
+
+  <span class="cmt">// PC13: output push-pull @ 2 MHz</span>
+  GPIOC-&gt;CRH &amp;= ~(<span class="num">0xF</span> &lt;&lt; <span class="num">20</span>);
+  GPIOC-&gt;CRH |=  (<span class="num">0x2</span> &lt;&lt; <span class="num">20</span>);
+
+  <span class="kw">while</span> (<span class="num">1</span>) {
+    GPIOC-&gt;BSRR = GPIO_BSRR_BS13; <span class="cmt">// Set</span>
+    <span class="fn">delay</span>(<span class="num">500000</span>);
+    GPIOC-&gt;BSRR = GPIO_BSRR_BR13; <span class="cmt">// Reset</span>
+    <span class="fn">delay</span>(<span class="num">500000</span>);
+  }
+}</pre>
+          </div>
+          <div class="wiring-diagram">
+            <div class="wiring-title">ST-Link V2 → Blue Pill SWD Wiring</div>
+            <table class="wiring-table">
+              <thead><tr><th>ST-Link V2 Pin</th><th>Wire</th><th>Blue Pill Pin</th><th>Function</th></tr></thead>
+              <tbody>
+                <tr><td class="wire-swdio">SWDIO (Pin 7)</td><td><div class="pin-color"><div class="pin-dot" style="background:#82aaff"></div>Blue</div></td><td class="wire-swdio">PA13 (SWDIO)</td><td>Serial Wire Data I/O</td></tr>
+                <tr><td class="wire-swclk">SWCLK (Pin 9)</td><td><div class="pin-color"><div class="pin-dot" style="background:var(--green)"></div>Green</div></td><td class="wire-swclk">PA14 (SWCLK)</td><td>Serial Wire Clock</td></tr>
+                <tr><td class="wire-gnd">GND (Pin 20)</td><td><div class="pin-color"><div class="pin-dot" style="background:#475569"></div>Black</div></td><td class="wire-gnd">GND</td><td>Common Ground</td></tr>
+                <tr><td class="wire-vcc">3.3V (Pin 1)</td><td><div class="pin-color"><div class="pin-dot" style="background:#ff6b6b"></div>Red</div></td><td class="wire-vcc">3V3</td><td>Target Power (optional)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: Arduino -->
+      <div class="tab-content" id="tab-content-arduino">
+        <div class="prog-grid">
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-header-left">
+                <div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div>
+                <span class="code-filename">blink.ino</span>
+              </div>
+              <span class="code-lang-badge">C++ · Arduino</span>
+            </div>
+            <pre><span class="cmt">// STM32duino core — Arduino IDE</span>
+<span class="cmt">// Board: "Generic STM32F1 series"</span>
+<span class="cmt">// Variant: STM32F103C8Tx</span>
+<span class="cmt">// Upload: Serial (UART1)</span>
+
+<span class="kw">#define</span> LED_PIN  PC13  <span class="cmt">// Active LOW</span>
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">pinMode</span>(LED_PIN, OUTPUT);
+  Serial.<span class="fn">begin</span>(<span class="num">115200</span>);
+  Serial.<span class="fn">println</span>(<span class="str">"Blue Pill ready!"</span>);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="fn">digitalWrite</span>(LED_PIN, LOW);   <span class="cmt">// LED ON</span>
+  Serial.<span class="fn">println</span>(<span class="str">"LED ON"</span>);
+  <span class="fn">delay</span>(<span class="num">500</span>);
+
+  <span class="fn">digitalWrite</span>(LED_PIN, HIGH);  <span class="cmt">// LED OFF</span>
+  Serial.<span class="fn">println</span>(<span class="str">"LED OFF"</span>);
+  <span class="fn">delay</span>(<span class="num">500</span>);
+}</pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-header-left">
+                <div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div>
+                <span class="code-filename">Arduino IDE Setup</span>
+              </div>
+              <span class="code-lang-badge">Config Steps</span>
+            </div>
+            <pre><span class="cmt">// 1. Add board URL in Preferences:</span>
+<span class="str">https://github.com/stm32duino/</span>
+<span class="str">BoardManagerFiles/raw/main/</span>
+<span class="str">package_stmicroelectronics</span>
+<span class="str">_index.json</span>
+
+<span class="cmt">// 2. Tools → Board Manager:</span>
+<span class="cmt">//    Install "STM32 MCU based boards"</span>
+
+<span class="cmt">// 3. Select board settings:</span>
+<span class="cmt">//    Board   : Generic STM32F1 series</span>
+<span class="cmt">//    Variant : STM32F103C8Tx</span>
+<span class="cmt">//    Upload  : Serial (UART1)</span>
+
+<span class="cmt">// 4. Boot mode for upload:</span>
+<span class="cmt">//    BOOT0=1, BOOT1=0 → Bootloader</span>
+<span class="cmt">//    Press Reset → click Upload</span>
+<span class="cmt">//    Then set BOOT0=0 → normal run</span></pre>
+          </div>
+          <div class="wiring-diagram">
+            <div class="wiring-title">USB-UART Adapter → Blue Pill (UART Bootloader Upload)</div>
+            <table class="wiring-table">
+              <thead><tr><th>USB-UART Adapter</th><th>Wire</th><th>Blue Pill Pin</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td class="wire-tx">TX</td><td><div class="pin-color"><div class="pin-dot" style="background:var(--orange)"></div>Orange</div></td><td class="wire-rx">A10 (RX1)</td><td>Adapter TX → MCU RX (crossed)</td></tr>
+                <tr><td class="wire-rx">RX</td><td><div class="pin-color"><div class="pin-dot" style="background:var(--yellow)"></div>Yellow</div></td><td class="wire-tx">A9 (TX1)</td><td>Adapter RX → MCU TX (crossed)</td></tr>
+                <tr><td class="wire-gnd">GND</td><td><div class="pin-color"><div class="pin-dot" style="background:#475569"></div>Black</div></td><td class="wire-gnd">GND</td><td>Common ground — essential!</td></tr>
+                <tr><td class="wire-vcc">3.3V / 5V</td><td><div class="pin-color"><div class="pin-dot" style="background:#ff6b6b"></div>Red</div></td><td class="wire-vcc">3V3 or 5V</td><td>Use 3.3V output if available</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: PlatformIO -->
+      <div class="tab-content" id="tab-content-platformio">
+        <div class="prog-grid">
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-header-left">
+                <div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div>
+                <span class="code-filename">platformio.ini</span>
+              </div>
+              <span class="code-lang-badge">Config</span>
+            </div>
+            <pre><span class="cmt">; PlatformIO Project Configuration</span>
+<span class="cmt">; VS Code + PlatformIO extension</span>
+
+[<span class="typ">env:bluepill_f103c8</span>]
+platform  = ststm32
+board     = bluepill_f103c8
+framework = arduino
+
+<span class="cmt">; ST-Link V2 for upload &amp; debug</span>
+upload_protocol   = stlink
+debug_tool        = stlink
+debug_build_flags = -O0 -g
+
+<span class="cmt">; Serial monitor</span>
+monitor_speed = <span class="num">115200</span>
+
+<span class="cmt">; Alternative: use libopencm3</span>
+<span class="cmt">; framework = libopencm3</span></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-header-left">
+                <div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div>
+                <span class="code-filename">src/main.cpp</span>
+              </div>
+              <span class="code-lang-badge">C++ · PlatformIO</span>
+            </div>
+            <pre><span class="cmt">// PlatformIO + Arduino framework</span>
+<span class="pre">#include</span> <span class="str">&lt;Arduino.h&gt;</span>
+
+<span class="kw">constexpr</span> <span class="kw">uint8_t</span> LED    = PC13;
+<span class="kw">constexpr</span> <span class="kw">uint32_t</span> PERIOD = <span class="num">500</span>;
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">pinMode</span>(LED, OUTPUT);
+  Serial.<span class="fn">begin</span>(<span class="num">115200</span>);
+  Serial.<span class="fn">println</span>(<span class="str">"PlatformIO — Blue Pill"</span>);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="fn">digitalWrite</span>(LED, LOW);
+  Serial.<span class="fn">println</span>(<span class="str">"LED ON"</span>);
+  <span class="fn">delay</span>(PERIOD);
+
+  <span class="fn">digitalWrite</span>(LED, HIGH);
+  Serial.<span class="fn">println</span>(<span class="str">"LED OFF"</span>);
+  <span class="fn">delay</span>(PERIOD);
+}</pre>
+          </div>
+          <div class="wiring-diagram">
+            <div class="wiring-title">PlatformIO CLI Quick Reference</div>
+            <table class="wiring-table">
+              <thead><tr><th>Command</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td class="wire-swclk"><code>pio run</code></td><td>Compile / build the project</td></tr>
+                <tr><td class="wire-swdio"><code>pio run --target upload</code></td><td>Compile and flash via ST-Link</td></tr>
+                <tr><td class="wire-tx"><code>pio device monitor</code></td><td>Open serial monitor at 115200 baud</td></tr>
+                <tr><td class="wire-rx"><code>pio debug</code></td><td>Start GDB debug session via ST-Link</td></tr>
+                <tr><td class="wire-vcc"><code>pio run --target clean</code></td><td>Remove all build artifacts</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div><!-- /tabs -->
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ST-LINK V2 PROGRAMMING GUIDE -->
+<section id="stlink">
+  <div class="container">
+    <div class="section-label">05 — Hardware Programmer</div>
+    <h2 class="section-title reveal">Programming with ST-Link V2</h2>
+    <p class="section-subtitle reveal">
+      The ST-Link V2 is the official debug/programmer for all STM32 devices. It uses the
+      2-wire SWD (Serial Wire Debug) protocol — faster, simpler, and more reliable than UART bootloading.
+    </p>
+
+    <!-- Connection Diagram -->
+    <div class="stlink-connection reveal">
+      <h3>Physical Connection — ST-Link V2 to Blue Pill</h3>
+
+      <!-- TWO-PANEL: pinout SVG + wiring SVG -->
+      <div style="display:flex;gap:28px;flex-wrap:wrap;margin-bottom:28px;align-items:flex-start">
+
+        <!-- PANEL 1 – ST-Link V2 Pinout (faithful recreation of the diagram image) -->
+        <div style="flex:0 0 340px;max-width:100%">
+          <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:8px;letter-spacing:.06em">ST-LINK V2 — 20-PIN JTAG/SWD CONNECTOR</div>
+          <svg viewBox="0 0 340 310" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:10px;background:#1a1a22;border:1px solid #2a3050">
+            <defs>
+              <style>
+                .pl { font-family:'JetBrains Mono',monospace; font-size:10px; fill:#cdd6e0; }
+                .pnum { font-family:'JetBrains Mono',monospace; font-size:9px; fill:#475569; }
+                .pill { rx:6; ry:6; height:18; }
+              </style>
+            </defs>
+            <!-- connector body -->
+            <rect x="128" y="36" width="84" height="240" rx="6" fill="#0d1220" stroke="#2a3a55" stroke-width="1.5"/>
+            <!-- pin dots - odd (left) column -->
+            <g fill="#c8c8d0">
+              <circle cx="148" cy="60" r="4"/><circle cx="148" cy="84" r="4"/><circle cx="148" cy="108" r="4"/>
+              <circle cx="148" cy="132" r="4"/><circle cx="148" cy="156" r="4"/><circle cx="148" cy="180" r="4"/>
+              <circle cx="148" cy="204" r="4"/><circle cx="148" cy="228" r="4"/><circle cx="148" cy="252" r="4"/>
+              <circle cx="148" cy="276" r="4"/>
+            </g>
+            <!-- pin dots - even (right) column -->
+            <g fill="#c8c8d0">
+              <circle cx="192" cy="60" r="4"/><circle cx="192" cy="84" r="4"/><circle cx="192" cy="108" r="4"/>
+              <circle cx="192" cy="132" r="4"/><circle cx="192" cy="156" r="4"/><circle cx="192" cy="180" r="4"/>
+              <circle cx="192" cy="204" r="4"/><circle cx="192" cy="228" r="4"/><circle cx="192" cy="252" r="4"/>
+              <circle cx="192" cy="276" r="4"/>
+            </g>
+
+            <!-- ── ODD PINS (Left side labels) ── -->
+            <!-- Pin 1 VAPP -->
+            <rect x="22" y="51" width="52" height="18" rx="6" fill="#e53935"/>
+            <text x="48" y="64" text-anchor="middle" class="pl" fill="white" font-weight="bold">VAPP</text>
+            <text x="118" y="63" text-anchor="end" class="pnum">1</text>
+            <line x1="74" y1="60" x2="128" y2="60" stroke="#555" stroke-width="1"/>
+            <!-- Pin 3 TRST -->
+            <rect x="22" y="75" width="52" height="18" rx="6" fill="#ff7043"/>
+            <text x="48" y="88" text-anchor="middle" class="pl" fill="white">TRST</text>
+            <text x="118" y="87" text-anchor="end" class="pnum">3</text>
+            <line x1="74" y1="84" x2="128" y2="84" stroke="#555" stroke-width="1"/>
+            <!-- Pin 5 TDI -->
+            <rect x="22" y="99" width="52" height="18" rx="6" fill="#ff7043"/>
+            <text x="48" y="112" text-anchor="middle" class="pl" fill="white">TDI</text>
+            <text x="118" y="111" text-anchor="end" class="pnum">5</text>
+            <line x1="74" y1="108" x2="128" y2="108" stroke="#555" stroke-width="1"/>
+            <!-- Pin 7 TMS / SWDIO -->
+            <rect x="22" y="123" width="52" height="18" rx="6" fill="#ff7043"/>
+            <text x="48" y="136" text-anchor="middle" class="pl" fill="white">TMS</text>
+            <text x="118" y="135" text-anchor="end" class="pnum">7</text>
+            <line x1="74" y1="132" x2="128" y2="132" stroke="#555" stroke-width="1"/>
+            <!-- SWDIO badge -->
+            <rect x="2" y="123" width="36" height="18" rx="5" fill="#43a047"/>
+            <text x="20" y="136" text-anchor="middle" class="pl" fill="white" font-size="8">SWDIO</text>
+            <!-- Pin 9 TCK / SWCLK -->
+            <rect x="22" y="147" width="52" height="18" rx="6" fill="#ff7043"/>
+            <text x="48" y="160" text-anchor="middle" class="pl" fill="white">TCK</text>
+            <text x="118" y="159" text-anchor="end" class="pnum">9</text>
+            <line x1="74" y1="156" x2="128" y2="156" stroke="#555" stroke-width="1"/>
+            <!-- SWCLK badge -->
+            <rect x="2" y="147" width="36" height="18" rx="5" fill="#43a047"/>
+            <text x="20" y="160" text-anchor="middle" class="pl" fill="white" font-size="8">SWCLK</text>
+            <!-- Pin 11 N.C. -->
+            <rect x="22" y="171" width="52" height="18" rx="6" fill="#37474f"/>
+            <text x="48" y="184" text-anchor="middle" class="pl" fill="#90a4ae">N.C.</text>
+            <text x="118" y="183" text-anchor="end" class="pnum">11</text>
+            <line x1="74" y1="180" x2="128" y2="180" stroke="#555" stroke-width="1"/>
+            <!-- Pin 13 TDO / SWO -->
+            <rect x="22" y="195" width="52" height="18" rx="6" fill="#ff7043"/>
+            <text x="48" y="208" text-anchor="middle" class="pl" fill="white">TDO</text>
+            <text x="118" y="207" text-anchor="end" class="pnum">13</text>
+            <line x1="74" y1="204" x2="128" y2="204" stroke="#555" stroke-width="1"/>
+            <!-- SWO badge -->
+            <rect x="2" y="195" width="30" height="18" rx="5" fill="#2e7d32"/>
+            <text x="17" y="208" text-anchor="middle" class="pl" fill="white" font-size="9">SWO</text>
+            <!-- Pin 15 NRST -->
+            <rect x="22" y="219" width="52" height="18" rx="6" fill="#fdd835" />
+            <text x="48" y="232" text-anchor="middle" class="pl" fill="#111">NRST</text>
+            <text x="118" y="231" text-anchor="end" class="pnum">15</text>
+            <line x1="74" y1="228" x2="128" y2="228" stroke="#555" stroke-width="1"/>
+            <!-- Pin 17 N.C. -->
+            <rect x="22" y="243" width="52" height="18" rx="6" fill="#37474f"/>
+            <text x="48" y="256" text-anchor="middle" class="pl" fill="#90a4ae">N.C.</text>
+            <text x="118" y="255" text-anchor="end" class="pnum">17</text>
+            <line x1="74" y1="252" x2="128" y2="252" stroke="#555" stroke-width="1"/>
+            <!-- Pin 19 VDD -->
+            <rect x="22" y="267" width="52" height="18" rx="6" fill="#e53935"/>
+            <text x="48" y="280" text-anchor="middle" class="pl" fill="white" font-weight="bold">VDD</text>
+            <text x="118" y="279" text-anchor="end" class="pnum">19</text>
+            <line x1="74" y1="276" x2="128" y2="276" stroke="#555" stroke-width="1"/>
+
+            <!-- ── EVEN PINS (Right side labels) ── -->
+            <!-- Pin 2 VAPP -->
+            <rect x="222" y="51" width="52" height="18" rx="6" fill="#e53935"/>
+            <text x="248" y="64" text-anchor="middle" class="pl" fill="white" font-weight="bold">VAPP</text>
+            <text x="222" y="63" text-anchor="start" class="pnum" x="213">2</text>
+            <line x1="196" y1="60" x2="222" y2="60" stroke="#555" stroke-width="1"/>
+            <text x="212" y="63" text-anchor="end" class="pnum">2</text>
+            <!-- Pin 4 GND -->
+            <rect x="222" y="75" width="52" height="18" rx="6" fill="#263238"/>
+            <text x="248" y="88" text-anchor="middle" class="pl" fill="#90a4ae">GND</text>
+            <line x1="196" y1="84" x2="222" y2="84" stroke="#555" stroke-width="1"/>
+            <text x="212" y="87" text-anchor="end" class="pnum">4</text>
+            <!-- Pin 6 GND -->
+            <rect x="222" y="99" width="52" height="18" rx="6" fill="#263238"/>
+            <text x="248" y="112" text-anchor="middle" class="pl" fill="#90a4ae">GND</text>
+            <line x1="196" y1="108" x2="222" y2="108" stroke="#555" stroke-width="1"/>
+            <text x="212" y="111" text-anchor="end" class="pnum">6</text>
+            <!-- Pin 8 GND -->
+            <rect x="222" y="123" width="52" height="18" rx="6" fill="#263238"/>
+            <text x="248" y="136" text-anchor="middle" class="pl" fill="#90a4ae">GND</text>
+            <line x1="196" y1="132" x2="222" y2="132" stroke="#555" stroke-width="1"/>
+            <text x="212" y="135" text-anchor="end" class="pnum">8</text>
+            <!-- Pin 10 GND -->
+            <rect x="222" y="147" width="52" height="18" rx="6" fill="#263238"/>
+            <text x="248" y="160" text-anchor="middle" class="pl" fill="#90a4ae">GND</text>
+            <line x1="196" y1="156" x2="222" y2="156" stroke="#555" stroke-width="1"/>
+            <text x="212" y="159" text-anchor="end" class="pnum">10</text>
+            <!-- Pin 12 GND -->
+            <rect x="222" y="171" width="52" height="18" rx="6" fill="#263238"/>
+            <text x="248" y="184" text-anchor="middle" class="pl" fill="#90a4ae">GND</text>
+            <line x1="196" y1="180" x2="222" y2="180" stroke="#555" stroke-width="1"/>
+            <text x="212" y="183" text-anchor="end" class="pnum">12</text>
+            <!-- Pin 14 GND -->
+            <rect x="222" y="195" width="52" height="18" rx="6" fill="#263238"/>
+            <text x="248" y="208" text-anchor="middle" class="pl" fill="#90a4ae">GND</text>
+            <line x1="196" y1="204" x2="222" y2="204" stroke="#555" stroke-width="1"/>
+            <text x="212" y="207" text-anchor="end" class="pnum">14</text>
+            <!-- Pin 16 GND -->
+            <rect x="222" y="219" width="52" height="18" rx="6" fill="#263238"/>
+            <text x="248" y="232" text-anchor="middle" class="pl" fill="#90a4ae">GND</text>
+            <line x1="196" y1="228" x2="222" y2="228" stroke="#555" stroke-width="1"/>
+            <text x="212" y="231" text-anchor="end" class="pnum">16</text>
+            <!-- Pin 18 GND -->
+            <rect x="222" y="243" width="52" height="18" rx="6" fill="#263238"/>
+            <text x="248" y="256" text-anchor="middle" class="pl" fill="#90a4ae">GND</text>
+            <line x1="196" y1="252" x2="222" y2="252" stroke="#555" stroke-width="1"/>
+            <text x="212" y="255" text-anchor="end" class="pnum">18</text>
+            <!-- Pin 20 GND -->
+            <rect x="222" y="267" width="52" height="18" rx="6" fill="#263238"/>
+            <text x="248" y="280" text-anchor="middle" class="pl" fill="#90a4ae">GND</text>
+            <line x1="196" y1="276" x2="222" y2="276" stroke="#555" stroke-width="1"/>
+            <text x="212" y="279" text-anchor="end" class="pnum">20</text>
+
+            <!-- Title -->
+            <text x="170" y="18" text-anchor="middle" fill="rgba(0,212,255,0.6)" font-size="9" font-family="JetBrains Mono,monospace" letter-spacing="1">JTAG / SWD PINOUT</text>
+          </svg>
+        </div>
+
+        <!-- PANEL 2 – Physical wiring diagram (ST-Link V2 → Blue Pill) -->
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:8px;letter-spacing:.06em">WIRING DIAGRAM — ST-LINK V2 ↔ BLUE PILL</div>
+          <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:10px;background:#0c1018;border:1px solid #2a3050">
+            <!-- Blue Pill Board (top) -->
+            <rect x="60" y="20" width="280" height="80" rx="6" fill="#0d2040" stroke="#1a4060" stroke-width="1.5"/>
+            <rect x="60" y="20" width="280" height="80" rx="6" fill="none" stroke="rgba(0,212,255,0.15)" stroke-width="0.5"/>
+            <text x="200" y="12" text-anchor="middle" fill="rgba(0,212,255,0.4)" font-size="7" font-family="JetBrains Mono,monospace">BLUE PILL — STM32F103C8T6</text>
+
+            <!-- MCU chip representation on board -->
+            <rect x="155" y="32" width="90" height="56" rx="3" fill="#0a1828" stroke="#2a5070" stroke-width="1"/>
+            <text x="200" y="60" text-anchor="middle" fill="rgba(0,212,255,0.6)" font-size="7.5" font-family="JetBrains Mono,monospace" font-weight="bold">STM32</text>
+            <text x="200" y="70" text-anchor="middle" fill="rgba(0,212,255,0.4)" font-size="6" font-family="JetBrains Mono,monospace">F103C8T6</text>
+
+            <!-- Board SWD pads (right side of board) -->
+            <rect x="305" y="38" width="9" height="6" rx="1" fill="#0d2030" stroke="#00d4ff" stroke-width="1"/>
+            <rect x="305" y="48" width="9" height="6" rx="1" fill="#0d2030" stroke="#00d4ff" stroke-width="1"/>
+            <rect x="305" y="58" width="9" height="6" rx="1" fill="#0d2030" stroke="#00d4ff" stroke-width="1"/>
+            <rect x="305" y="68" width="9" height="6" rx="1" fill="#0d2030" stroke="#00d4ff" stroke-width="1"/>
+            <text x="299" y="42" text-anchor="end" fill="#82aaff" font-size="6.5" font-family="JetBrains Mono,monospace">SWDIO</text>
+            <text x="299" y="52" text-anchor="end" fill="#00ff88" font-size="6.5" font-family="JetBrains Mono,monospace">SWCLK</text>
+            <text x="299" y="62" text-anchor="end" fill="#b0b8c4" font-size="6.5" font-family="JetBrains Mono,monospace">GND</text>
+            <text x="299" y="72" text-anchor="end" fill="#ff6b6b" font-size="6.5" font-family="JetBrains Mono,monospace">3.3V</text>
+            <text x="322" y="85" text-anchor="middle" fill="rgba(0,212,255,0.3)" font-size="5.5" font-family="JetBrains Mono,monospace">SWD</text>
+
+            <!-- ST-Link V2 (bottom) -->
+            <rect x="100" y="170" width="200" height="70" rx="8" fill="#1a2050" stroke="#3040a0" stroke-width="1.5"/>
+            <rect x="100" y="170" width="200" height="70" rx="8" fill="none" stroke="rgba(100,140,255,0.15)" stroke-width="0.5"/>
+            <!-- USB plug -->
+            <rect x="60" y="188" width="42" height="34" rx="4" fill="#2a2a42" stroke="#4a4a72" stroke-width="1"/>
+            <rect x="64" y="192" width="34" height="26" rx="2" fill="#1a1a32"/>
+            <text x="81" y="208" text-anchor="middle" fill="rgba(100,100,255,0.6)" font-size="7" font-family="JetBrains Mono,monospace">USB</text>
+            <!-- ST-link label -->
+            <text x="200" y="192" text-anchor="middle" fill="#6080ff" font-size="8.5" font-family="JetBrains Mono,monospace" font-weight="bold">ST-LINK V2</text>
+            <text x="200" y="204" text-anchor="middle" fill="rgba(100,140,255,0.5)" font-size="6.5" font-family="JetBrains Mono,monospace">JTAG/SWD PROGRAMMER</text>
+
+            <!-- ST-Link right edge pads -->
+            <rect x="298" y="183" width="9" height="6" rx="1" fill="#0a1020" stroke="#82aaff" stroke-width="1"/>
+            <rect x="298" y="193" width="9" height="6" rx="1" fill="#0a1020" stroke="#00ff88" stroke-width="1"/>
+            <rect x="298" y="203" width="9" height="6" rx="1" fill="#0a1020" stroke="#666" stroke-width="1"/>
+            <rect x="298" y="213" width="9" height="6" rx="1" fill="#0a1020" stroke="#ff6b6b" stroke-width="1"/>
+            <text x="312" y="188" fill="#82aaff" font-size="6.5" font-family="JetBrains Mono,monospace">SWDIO (7)</text>
+            <text x="312" y="198" fill="#00ff88" font-size="6.5" font-family="JetBrains Mono,monospace">SWCLK (9)</text>
+            <text x="312" y="208" fill="#b0b8c4" font-size="6.5" font-family="JetBrains Mono,monospace">GND (20)</text>
+            <text x="312" y="218" fill="#ff6b6b" font-size="6.5" font-family="JetBrains Mono,monospace">3.3V (1)</text>
+
+            <!-- Colored wires connecting the two -->
+            <!-- SWDIO wire - blue -->
+            <path d="M 314 41 Q 348 41 348 130 Q 348 186 307 186" fill="none" stroke="#82aaff" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- SWCLK wire - green -->
+            <path d="M 314 51 Q 352 51 352 134 Q 352 196 307 196" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- GND wire - gray -->
+            <path d="M 314 61 Q 356 61 356 138 Q 356 206 307 206" fill="none" stroke="#6b7280" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- 3.3V wire - red -->
+            <path d="M 314 71 Q 360 71 360 142 Q 360 216 307 216" fill="none" stroke="#ff6b6b" stroke-width="2.5" stroke-linecap="round"/>
+
+            <!-- Wire dots at connection points -->
+            <circle cx="314" cy="41" r="3" fill="#82aaff"/>
+            <circle cx="307" cy="186" r="3" fill="#82aaff"/>
+            <circle cx="314" cy="51" r="3" fill="#00ff88"/>
+            <circle cx="307" cy="196" r="3" fill="#00ff88"/>
+            <circle cx="314" cy="61" r="3" fill="#6b7280"/>
+            <circle cx="307" cy="206" r="3" fill="#6b7280"/>
+            <circle cx="314" cy="71" r="3" fill="#ff6b6b"/>
+            <circle cx="307" cy="216" r="3" fill="#ff6b6b"/>
+          </svg>
+        </div>
+
+      </div><!-- end two-panel -->
+
+      <!-- Wiring detail table -->
+      <table class="wiring-table">
+        <thead><tr><th>ST-Link V2 Pin</th><th>Wire Color</th><th>Blue Pill SWD Pin</th><th>Signal</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="wire-swdio">Pin 7 — TMS/SWDIO</td>
+            <td><div class="pin-color"><div class="pin-dot" style="background:#82aaff"></div>Blue</div></td>
+            <td class="wire-swdio">PA13 (SWDIO)</td>
+            <td>Data I/O</td>
+            <td>Bidirectional serial wire data line</td>
+          </tr>
+          <tr>
+            <td class="wire-swclk">Pin 9 — TCK/SWCLK</td>
+            <td><div class="pin-color"><div class="pin-dot" style="background:#00ff88"></div>Green</div></td>
+            <td class="wire-swclk">PA14 (SWCLK)</td>
+            <td>Clock</td>
+            <td>Debug clock output from ST-Link</td>
+          </tr>
+          <tr>
+            <td class="wire-gnd">Pin 20 — GND</td>
+            <td><div class="pin-color"><div class="pin-dot" style="background:#6b7280"></div>Black</div></td>
+            <td class="wire-gnd">GND</td>
+            <td>Ground</td>
+            <td>Must connect first — common reference</td>
+          </tr>
+          <tr>
+            <td class="wire-vcc">Pin 1 — VAPP</td>
+            <td><div class="pin-color"><div class="pin-dot" style="background:#ff6b6b"></div>Red</div></td>
+            <td class="wire-vcc">3V3</td>
+            <td>3.3V Power</td>
+            <td>Optional — powers Blue Pill from ST-Link</td>
+          </tr>
+          <tr>
+            <td style="color:#ffd60a">Pin 15 — NRST</td>
+            <td><div class="pin-color"><div class="pin-dot" style="background:#ffd60a"></div>Yellow</div></td>
+            <td style="color:#ffd60a">NRST (RST pin)</td>
+            <td>Reset</td>
+            <td>Optional — allows ST-Link to reset target</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <!-- Step-by-Step Cards -->
+    <div class="stlink-grid">
+      <div class="stlink-card reveal">
+        <h3><span class="step-num">1</span>Install ST-Link Drivers</h3>
+        <p>Download and install the ST-Link USB driver from ST's website. On Windows, the STSW-LINK009 package is required. On Linux/macOS, libusb handles it automatically.</p>
+        <ul>
+          <li>Windows: Install <code>STSW-LINK009</code> driver package</li>
+          <li>Linux: Add udev rules for <code>vid:0483 pid:3748</code></li>
+          <li>macOS: No driver needed — uses built-in HID</li>
+          <li>Verify in Device Manager: "STMicroelectronics STLink dongle"</li>
+        </ul>
+      </div>
+
+      <div class="stlink-card reveal" style="transition-delay:0.1s">
+        <h3><span class="step-num">2</span>Install STM32CubeProgrammer</h3>
+        <p>ST's official flashing utility. Supports SWD, JTAG, UART, USB DFU. Works with all STM32 families. Alternatively use OpenOCD (free, open-source).</p>
+        <ul>
+          <li>Download STM32CubeProgrammer from <code>st.com</code></li>
+          <li>Or install OpenOCD: <code>winget install openocd</code></li>
+          <li>STM32CubeIDE bundles its own programmer automatically</li>
+          <li>PlatformIO uses OpenOCD internally via <code>stlink</code></li>
+        </ul>
+      </div>
+
+      <div class="stlink-card reveal" style="transition-delay:0.15s">
+        <h3><span class="step-num">3</span>Boot Jumper Settings</h3>
+        <p>For SWD programming the boot jumpers do NOT need to be changed — you can flash directly into Flash at <code>0x08000000</code> while running normally.</p>
+        <ul>
+          <li><code>BOOT0 = 0</code>, <code>BOOT1 = 0</code> → Boot from Flash (normal)</li>
+          <li>SWD works in this mode — press Reset if needed</li>
+          <li>No jumper changes required unlike UART bootloader</li>
+          <li>Hold Reset while connecting if MCU is locked</li>
+        </ul>
+      </div>
+
+      <div class="stlink-card reveal" style="transition-delay:0.2s">
+        <h3><span class="step-num">4</span>Flash via STM32CubeProgrammer</h3>
+        <ul>
+          <li>Open STM32CubeProgrammer</li>
+          <li>Select <code>ST-LINK</code> interface in top-right dropdown</li>
+          <li>Click <strong>Connect</strong> — MCU info appears if wiring is correct</li>
+          <li>Go to <strong>Erasing &amp; Programming</strong> tab</li>
+          <li>Browse to your compiled <code>.bin</code> or <code>.elf</code> file</li>
+          <li>Set Start Address: <code>0x08000000</code></li>
+          <li>Check <strong>Verify programming</strong></li>
+          <li>Click <strong>Start Programming</strong> → Done!</li>
+        </ul>
+      </div>
+
+      <div class="stlink-card reveal" style="transition-delay:0.25s">
+        <h3><span class="step-num">5</span>Flash via Command Line (OpenOCD)</h3>
+        <div class="code-block" style="margin-top:0">
+          <div class="code-header">
+            <div class="code-header-left">
+              <div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div>
+              <span class="code-filename">Terminal</span>
+            </div>
+            <span class="code-lang-badge">Shell</span>
+          </div>
+          <pre style="font-size:0.72rem"><span class="cmt"># Flash .bin file using OpenOCD + ST-Link</span>
+openocd \
+  -f interface/stlink.cfg \
+  -f target/stm32f1x.cfg \
+  -c <span class="str">"program firmware.bin verify reset exit 0x08000000"</span>
+
+<span class="cmt"># Erase entire Flash chip</span>
+openocd \
+  -f interface/stlink.cfg \
+  -f target/stm32f1x.cfg \
+  -c <span class="str">"init; halt; stm32f1x mass_erase 0; exit"</span>
+
+<span class="cmt"># Flash .elf file (address embedded inside)</span>
+openocd \
+  -f interface/stlink.cfg \
+  -f target/stm32f1x.cfg \
+  -c <span class="str">"program firmware.elf verify reset exit"</span></pre>
+        </div>
+      </div>
+
+      <div class="stlink-card reveal" style="transition-delay:0.3s">
+        <h3><span class="step-num">6</span>Live Debug with GDB</h3>
+        <ul>
+          <li>Start OpenOCD GDB server: <code>openocd -f interface/stlink.cfg -f target/stm32f1x.cfg</code></li>
+          <li>Listens on <code>localhost:3333</code> (GDB) and <code>localhost:4444</code> (telnet)</li>
+          <li>In another terminal: <code>arm-none-eabi-gdb firmware.elf</code></li>
+          <li>Connect: <code>(gdb) target remote :3333</code></li>
+          <li>Set breakpoint: <code>(gdb) break main</code></li>
+          <li>Run: <code>(gdb) continue</code></li>
+          <li>STM32CubeIDE handles all this with a GUI debugger</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Troubleshooting -->
+    <h3 class="reveal" style="font-size:1.1rem;font-weight:600;margin-bottom:20px;color:var(--text-primary)">⚠️ Common Issues &amp; Fixes</h3>
+    <div class="troubleshoot-grid">
+      <div class="trouble-item reveal">
+        <h4>🔴 "No target connected"</h4>
+        <p>Check your wiring: SWDIO → PA13, SWCLK → PA14, GND connected. Some Blue Pill clones have the SWD pins swapped. Try pressing Reset while clicking Connect in CubeProgrammer.</p>
+      </div>
+      <div class="trouble-item warn reveal" style="transition-delay:0.1s">
+        <h4>🟠 Target reads all 0xFF (blank)</h4>
+        <p>The MCU may have read protection enabled. In STM32CubeProgrammer → OB (Option Bytes) → Set RDP to Level 0 and Apply. This will erase Flash — save your code first!</p>
+      </div>
+      <div class="trouble-item warn reveal" style="transition-delay:0.15s">
+        <h4>🟠 ST-Link not detected in PC</h4>
+        <p>Install the STSW-LINK009 driver (Windows). Unplug and replug the USB. Check Device Manager for "Unknown USB Device" — likely a driver issue or a clone ST-Link needing firmware update.</p>
+      </div>
+      <div class="trouble-item ok reveal" style="transition-delay:0.2s">
+        <h4>🟢 Update ST-Link Firmware</h4>
+        <p>Open STM32CubeProgrammer → Help → Firmware Upgrade. Outdated ST-Link V2 firmware (especially on clones) is a very common cause of connection failures. Always update first.</p>
+      </div>
+      <div class="trouble-item reveal" style="transition-delay:0.25s">
+        <h4>🔴 "Access port error" on connection</h4>
+        <p>The Blue Pill may be executing code that disables SWD (e.g., PA13/PA14 remapped to GPIO). Hold the RESET button, click Connect in CubeProgrammer, then release Reset.</p>
+      </div>
+      <div class="trouble-item ok reveal" style="transition-delay:0.3s">
+        <h4>🟢 Verify Correct Pinout</h4>
+        <p>The ST-Link V2 clone (silver stick) has its own pinout printed on the label. Pin 1 is marked. Use the correct pins: VCC=1, GND=4 (or 20), SWDIO=7, SWCLK=9, RST=15 (optional).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    STM32F103C8T6 Interactive Reference &nbsp;·&nbsp; Pure HTML / CSS / JS &nbsp;·&nbsp;
+    <a href="stm32f103c8 (1).pdf" target="_blank" rel="noopener">📄 Local Datasheet</a> &nbsp;·&nbsp;
+    Data from <a href="https://www.st.com/resource/en/datasheet/stm32f103c8.pdf" target="_blank" rel="noopener">ST Datasheet</a> &amp;
+    <a href="https://www.st.com/resource/en/reference_manual/cd00171190-stm32f101xx-stm32f102xx-stm32f103xx-stm32f105xx-and-stm32f107xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf" target="_blank" rel="noopener">RM0008</a>
+  </p>
+</footer>
+
+<script>
+'use strict';
+
+/* ── SCROLL REVEAL ─────────────────────────────────────────── */
+const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+revealEls.forEach(el => revealObs.observe(el));
+
+/* ── BOARD TOOLTIPS ─────────────────────────────────────────── */
+const container = document.getElementById('boardContainer');
+const tooltip   = document.getElementById('boardTooltip');
+const tipTitle  = document.getElementById('tipTitle');
+const tipDesc   = document.getElementById('tipDesc');
+
+document.querySelectorAll('.board-hotspot').forEach(hs => {
+  hs.addEventListener('mouseenter', () => {
+    tipTitle.textContent = hs.dataset.tipTitle;
+    tipDesc.textContent  = hs.dataset.tipDesc;
+    tooltip.style.opacity   = '1';
+    tooltip.style.transform = 'translateY(0)';
+  });
+  hs.addEventListener('mousemove', e => {
+    const cr = container.getBoundingClientRect();
+    const x  = e.clientX - cr.left;
+    const y  = e.clientY - cr.top;
+    const tw = tooltip.offsetWidth;
+    const th = tooltip.offsetHeight;
+    let tx = x + 14, ty = y - th - 12;
+    if (tx + tw > cr.width)  tx = x - tw - 14;
+    if (ty < 0)              ty = y + 14;
+    tooltip.style.left = tx + 'px';
+    tooltip.style.top  = ty + 'px';
+  });
+  hs.addEventListener('mouseleave', () => {
+    tooltip.style.opacity   = '0';
+    tooltip.style.transform = 'translateY(6px)';
+  });
+});
+
+/* ── MEMORY BAR ANIMATION ───────────────────────────────────── */
+const memMap  = document.getElementById('memoryMap');
+const memSegs = memMap.querySelectorAll('.memory-segment');
+const memObs  = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      memSegs.forEach((seg, i) => setTimeout(() => seg.classList.add('animated'), i * 130));
+      memObs.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+memObs.observe(memMap);
+
+/* ── ARCH STAGGERED REVEAL ──────────────────────────────────── */
+const archSection = document.getElementById('architecture');
+const archBlocks  = archSection.querySelectorAll('.arch-block');
+const archObs     = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      archBlocks.forEach((b, i) => {
+        b.style.transitionDelay = (i * 0.06) + 's';
+        b.classList.add('visible');
+      });
+      archObs.disconnect();
+    }
+  });
+}, { threshold: 0.08 });
+archObs.observe(archSection);
+
+/* ── TABS ───────────────────────────────────────────────────── */
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('tab-' + name).setAttribute('aria-selected','true');
+  document.getElementById('tab-content-' + name).classList.add('active');
+}
+
+/* ── NAVBAR SCROLL ──────────────────────────────────────────── */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY > 30;
+  navbar.style.background    = scrolled ? 'rgba(10,14,26,0.97)' : 'rgba(10,14,26,0.85)';
+  navbar.style.borderBottomColor = scrolled ? 'rgba(0,212,255,0.15)' : 'var(--border)';
+}, { passive: true });
+
+/* ── HAMBURGER ──────────────────────────────────────────────── */
+const hamburger = document.getElementById('hamburger');
+const navLinks  = document.getElementById('navLinks');
+let navOpen = false;
+hamburger.addEventListener('click', () => {
+  navOpen = !navOpen;
+  if (navOpen) {
+    Object.assign(navLinks.style, {
+      display:'flex', flexDirection:'column', position:'absolute',
+      top:'60px', left:'0', right:'0', background:'rgba(10,14,26,0.98)',
+      padding:'20px 24px', gap:'18px', borderBottom:'1px solid var(--border)', zIndex:'999'
+    });
+  } else {
+    navLinks.style.display = 'none';
+  }
+});
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { if (navOpen) { navOpen = false; navLinks.style.display = 'none'; } }));
+
+/* ── HERO PARALLAX GLOW ─────────────────────────────────────── */
+const heroGlow = document.getElementById('heroGlow');
+document.addEventListener('mousemove', e => {
+  if (window.scrollY < window.innerHeight) {
+    const x = (e.clientX / window.innerWidth  - 0.5) * 50;
+    const y = (e.clientY / window.innerHeight - 0.5) * 50;
+    heroGlow.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+  }
+}, { passive: true });
+
+/* ── BOARD IMAGE FALLBACK ────────────────────────────────────── */
+const boardImg = document.getElementById('boardImg');
+const boardSvgFallback = document.getElementById('boardSvgFallback');
+if (boardImg) {
+  boardImg.addEventListener('error', () => {
+    boardImg.closest('.board-img-frame').style.display = 'none';
+    if (boardSvgFallback) boardSvgFallback.style.display = 'block';
+  });
+}
+</script>
+</body>
+</html>
