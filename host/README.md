@@ -46,3 +46,7 @@ gcc <filename>.c -o out && ./out
 | 28 | [`type_qualifier`](./type_qualifier/) | Types | `const`, `volatile`, and other type qualifiers |
 | 29 | [`union`](./union/) | Unions | Defining and using `union` — shared memory layout |
 | 30 | [`union_bit_extraction`](./union_bit_extraction/) | Unions / Bitfields | Using unions + bitfields to extract individual bits from a value |
+| 31 | [`Pointer_extra`](./Pointer_extra/) | Pointers | Extra pointer exercises: null pointers, void pointers, pointer comparisons |
+| 32 | [`array_and_pointers`](./array_and_pointers/) | Arrays / Pointers | Relationship between arrays and pointers; pointer-based array traversal |
+| 33 | [`array_as_function_arguments`](./array_as_function_arguments/) | Arrays / Functions | Passing arrays to functions; pointer decay and `sizeof` behaviour |
+| 34 | [`call_by_refernce`](./call_by_refernce/) | Functions / Pointers | Call-by-reference using pointers; in-place modification of variables |
