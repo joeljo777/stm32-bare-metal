@@ -50,3 +50,10 @@ gcc <filename>.c -o out && ./out
 | 32 | [`array_and_pointers`](./array_and_pointers/) | Arrays / Pointers | Relationship between arrays and pointers; pointer-based array traversal |
 | 33 | [`array_as_function_arguments`](./array_as_function_arguments/) | Arrays / Functions | Passing arrays to functions; pointer decay and `sizeof` behaviour |
 | 34 | [`call_by_refernce`](./call_by_refernce/) | Functions / Pointers | Call-by-reference using pointers; in-place modification of variables |
+| 35 | [`2D_array`](./2D_array/) | Arrays | 2D array declaration, initialization, pointer-based access (`*(*a+1)`), and memory layout |
+| 36 | [`3D_array`](./3D_array/) | Arrays | 3D array (`[2][3][4]`) — layers, rows, columns; memory layout visualization |
+| 37 | [`array_practice`](./array_practice/) | Arrays / Strings | Character array traversal via pointer; manual `print` function for C strings |
+| 38 | [`c`](./c/) | Project Setup | Skeleton STM32CubeIDE project (build config only, no source yet) |
+| 39 | [`3D_array_as_function_arguments`](./3D_array_as_function_arguments/) | Arrays / Functions | Passing 3D arrays to functions |
+| 40 | [`heap`](./heap/) | Memory | Heap memory allocation and deallocation (`malloc`, `free`) |
+| 41 | [`stack_global.c`](./stack_global.c/) | Memory | Stack frames, function calls, and global variables demonstration |

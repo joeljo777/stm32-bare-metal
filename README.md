@@ -69,7 +69,7 @@ STM32/
 │   ├── struct/
 │   ├── union/
 │   ├── bitwise_operator/
-│   └── ...                  # 34 projects total
+│   └── ...                  # 41 projects total
 │
 ├── target/                  # STM32 bare-metal projects
 │   ├── helloworld_semihosting/
@@ -117,7 +117,7 @@ gcc project.c -o project && ./project
 
 ### C Language Fundamentals (`host/`)
 - Data types, type qualifiers, `sizeof`, `typedef`
-- Arrays, strings, string literals
+- Arrays, 2D/3D multi-dimensional arrays, strings, string literals
 - Pointers, pointer arithmetic, struct pointers, null/void pointers
 - Arrays and pointers relationship; pointer decay; passing arrays to functions
 - Call-by-reference via pointers; in-place variable modification
