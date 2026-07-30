@@ -57,3 +57,11 @@ gcc <filename>.c -o out && ./out
 | 39 | [`3D_array_as_function_arguments`](./3D_array_as_function_arguments/) | Arrays / Functions | Passing 3D arrays to functions |
 | 40 | [`heap`](./heap/) | Memory | Heap memory allocation and deallocation (`malloc`, `free`) |
 | 41 | [`stack_global.c`](./stack_global.c/) | Memory | Stack frames, function calls, and global variables demonstration |
+| 42 | [`Bubble_sort_with_function_callback`](./Bubble_sort_with_function_callback/) | Function Pointers | Bubble sort implementation using a function pointer callback |
+| 43 | [`callback_using_funcrion_pointer`](./callback_using_funcrion_pointer/) | Function Pointers | Implementing callbacks using function pointers |
+| 44 | [`calloc`](./calloc/) | Memory | Dynamic memory allocation with `calloc` |
+| 45 | [`function_pointers`](./function_pointers/) | Function Pointers | Function pointers basics |
+| 46 | [`malloc`](./malloc/) | Memory | Dynamic memory allocation with `malloc` |
+| 47 | [`malloc_alloc_realloc`](./malloc_alloc_realloc/) | Memory | Memory reallocation and dynamic arrays |
+| 48 | [`memory_leak`](./memory_leak/) | Memory | Understanding and avoiding memory leaks |
+| 49 | [`pointer_as_function_return`](./pointer_as_function_return/) | Pointers / Functions | Returning pointers from functions |
