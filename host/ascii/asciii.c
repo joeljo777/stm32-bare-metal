@@ -9,7 +9,7 @@
 #include<stdio.h>
 int main(void)
 {
-	char a, b, c, d, e, f;
+	char a;
 
 	    /*printf("Enter a, b, c, d, e, f:\n");
 	    fflush(stdout);
@@ -21,7 +21,7 @@ int main(void)
 	    printf("Values = %d, %d, %d, %d, %d, %d", a, b, c, d, e, f);*/
 	printf("Enter a Character");
 	fflush(stdout);
-	a =getchar();
+	scanf("%c",&a);
 	printf("a= %d",a);
 	while(getchar()!='\n')
 	{
