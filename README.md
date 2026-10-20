@@ -69,7 +69,7 @@ STM32/
 │   ├── struct/
 │   ├── union/
 │   ├── bitwise_operator/
-│   └── ...                  # 41 projects total
+│   └── ...                  # 58 projects total
 │
 ├── target/                  # STM32 bare-metal projects
 │   ├── helloworld_semihosting/
@@ -124,7 +124,9 @@ gcc project.c -o project && ./project
 - Structs, unions, bitfields, packet structures
 - Control flow: `if`, `switch`, loops (`for`, `while`, `do-while`)
 - Operators: arithmetic, bitwise, shift
-- Functions, macros, ASCII
+- Functions, function pointers, callbacks, command-line arguments (`argc`, `argv`), macros, ASCII
+- Dynamic memory allocation (`malloc`, `calloc`, `realloc`, `free`), memory leaks, stack vs heap
+- Register bitwise operations: setting, clearing, toggling, and testing bits in 8-bit registers
 - Build process understanding
 
 ### STM32 Bare-Metal (`target/`)

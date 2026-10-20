@@ -65,3 +65,12 @@ gcc <filename>.c -o out && ./out
 | 47 | [`malloc_alloc_realloc`](./malloc_alloc_realloc/) | Memory | Memory reallocation and dynamic arrays |
 | 48 | [`memory_leak`](./memory_leak/) | Memory | Understanding and avoiding memory leaks |
 | 49 | [`pointer_as_function_return`](./pointer_as_function_return/) | Pointers / Functions | Returning pointers from functions |
+| 50 | [`main_with_parameters`](./main_with_parameters/) | Functions / Arguments | Accessing and processing command-line arguments via `argc` and `argv` |
+| 51 | [`c_array_practice`](./c_array_practice/) | Arrays | Basic 1D array traversal, indexing, and formatted output |
+| 52 | [`practice_1`](./practice_1/) | Bit Manipulation / Registers | Set or clear a specific bit in an 8-bit register based on user mode |
+| 53 | [`practice_2`](./practice_2/) | Bit Manipulation | Toggle the 5th bit (position 5) of an integer using XOR (`^= (1 << 5)`) |
+| 54 | [`practice_3`](./practice_3/) | Bit Manipulation | Check if the K-th bit of an integer is set (1) or cleared (0) |
+| 55 | [`practice_4`](./practice_4/) | Bit Manipulation / Registers | Set a bit at a given position in an 8-bit register (`reg \| (1 << pos)`) |
+| 56 | [`practice_5`](./practice_5/) | Bit Manipulation / Registers | Clear a bit at a given position in an 8-bit register (`reg & ~(1 << pos)`) |
+| 57 | [`practice_6`](./practice_6/) | Bit Manipulation / Registers | Toggle a bit at a given position in an 8-bit register (`reg ^ (1 << pos)`) |
+| 58 | [`practice_7`](./practice_7/) | Bit Manipulation / Registers | Test/check if a specific bit in an 8-bit register is set (`(reg & (1 << pos)) ? 1 : 0`) |

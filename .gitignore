@@ -14,6 +14,8 @@ Release/
 
 # ── STM32CubeIDE Metadata (keep .cproject/.project so IDE can open projects) ─
 .settings/
+.metadata/
+
 
 # ── Linker Script generated artifacts ───────────────────────────────────────
 *.ld.bak
