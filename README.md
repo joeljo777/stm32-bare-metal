@@ -69,7 +69,7 @@ STM32/
 │   ├── struct/
 │   ├── union/
 │   ├── bitwise_operator/
-│   └── ...                  # 58 projects total
+│   └── ...                  # 62 projects total
 │
 ├── target/                  # STM32 bare-metal projects
 │   ├── helloworld_semihosting/
@@ -126,7 +126,7 @@ gcc project.c -o project && ./project
 - Operators: arithmetic, bitwise, shift
 - Functions, function pointers, callbacks, command-line arguments (`argc`, `argv`), macros, ASCII
 - Dynamic memory allocation (`malloc`, `calloc`, `realloc`, `free`), memory leaks, stack vs heap
-- Register bitwise operations: setting, clearing, toggling, and testing bits in 8-bit registers
+- Register bitwise operations: setting, clearing, toggling, testing bits, bitfield manipulation, MSB isolation, macro operations, and status register flag decoding
 - Build process understanding
 
 ### STM32 Bare-Metal (`target/`)

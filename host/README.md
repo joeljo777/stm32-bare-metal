@@ -74,3 +74,7 @@ gcc <filename>.c -o out && ./out
 | 56 | [`practice_5`](./practice_5/) | Bit Manipulation / Registers | Clear a bit at a given position in an 8-bit register (`reg & ~(1 << pos)`) |
 | 57 | [`practice_6`](./practice_6/) | Bit Manipulation / Registers | Toggle a bit at a given position in an 8-bit register (`reg ^ (1 << pos)`) |
 | 58 | [`practice_7`](./practice_7/) | Bit Manipulation / Registers | Test/check if a specific bit in an 8-bit register is set (`(reg & (1 << pos)) ? 1 : 0`) |
+| 59 | [`practice_8`](./practice_8/) | Bit Manipulation / Registers | Set a contiguous bitfield of given length starting from a position in a 32-bit register |
+| 60 | [`practice_9`](./practice_9/) | Bit Manipulation | Retain only the highest (leftmost/MSB) set bit in a 16-bit register, clearing all others |
+| 61 | [`practice_10`](./practice_10/) | Bit Manipulation / Macros | Sequential register bit operations using macros: set bits 2 & 7, clear bit 3, toggle bit 5 |
+| 62 | [`practice_11`](./practice_11/) | Bit Manipulation / Registers | Decode an 8-bit status register into human-readable flags printed LSB to MSB |
