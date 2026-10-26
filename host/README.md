@@ -78,3 +78,10 @@ gcc <filename>.c -o out && ./out
 | 60 | [`practice_9`](./practice_9/) | Bit Manipulation | Retain only the highest (leftmost/MSB) set bit in a 16-bit register, clearing all others |
 | 61 | [`practice_10`](./practice_10/) | Bit Manipulation / Macros | Sequential register bit operations using macros: set bits 2 & 7, clear bit 3, toggle bit 5 |
 | 62 | [`practice_11`](./practice_11/) | Bit Manipulation / Registers | Decode an 8-bit status register into human-readable flags printed LSB to MSB |
+| 63 | [`practice_12`](./practice_12/) | Bit Manipulation | Interleave bits with zeros (bit spreading): expand 8-bit value to 16-bit with bits at even positions |
+| 64 | [`practice_13`](./practice_13/) | Bit Manipulation / Macros | Macro-based 16-bit register config helper: pack ENABLE, MODE, and SPEED fields while preserving reserved bits |
+| 65 | [`practice_15`](./practice_15/) | Bitwise Operators | Bitwise operator precedence pitfall: why parentheses are critical in conditions like `status & (1 << 3)` |
+| 66 | [`practice_16`](./practice_16/) | Bit Manipulation | In-place variable swap using bitwise XOR without a temporary variable |
+| 67 | [`practice_17`](./practice_17/) | Bitwise Operators / Types | Integer promotion pitfall with bitwise NOT (`~`) on small unsigned types and proper casting |
+| 68 | [`practice_18`](./practice_18/) | Preprocessor / Macros | Macro side effects: avoiding multiple evaluations when passing expressions with side effects (`pos++`) |
+| 69 | [`practice_19`](./practice_19/) | Project Setup | Skeleton template for host-based C practice exercises |
