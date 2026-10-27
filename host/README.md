@@ -85,3 +85,12 @@ gcc <filename>.c -o out && ./out
 | 67 | [`practice_17`](./practice_17/) | Bitwise Operators / Types | Integer promotion pitfall with bitwise NOT (`~`) on small unsigned types and proper casting |
 | 68 | [`practice_18`](./practice_18/) | Preprocessor / Macros | Macro side effects: avoiding multiple evaluations when passing expressions with side effects (`pos++`) |
 | 69 | [`practice_19`](./practice_19/) | Project Setup | Skeleton template for host-based C practice exercises |
+| 70 | [`practice_20`](./practice_20/) | Arrays / Loops | Calculate difference between sum of elements at even indices and odd indices (`even_sum - odd_sum`) |
+| 71 | [`practice_21`](./practice_21/) | Arrays / Prefix Sum | Compute prefix / cumulative sum array where `sum[i] = sum[i - 1] + a[i]` |
+| 72 | [`practice_22`](./practice_22/) | Arrays / Element Transformation | Conditional element transformation based on index parity (multiply odd indices by 2, add 10 to even indices) |
+| 73 | [`practice_23`](./practice_23/) | Project Setup | Skeleton template for host-based C practice exercises |
+| 74 | [`practice_24`](./practice_24/) | Arrays / Nested Loops | Triplet sum search: find and count all unique triplets whose sum equals target value `x` |
+| 75 | [`practice_25`](./practice_25/) | Arrays / Search Algorithms | Find second distinct maximum element (`smax`) in an array, handling duplicate maximums |
+| 76 | [`practice_26`](./practice_26/) | Arrays / Reversal | Array reversal using an auxiliary array (`rr[i] = arr[n - 1 - i]`) |
+| 77 | [`practice_27`](./practice_27/) | Arrays / Two Pointers | In-place array reversal using two pointers / indices swapping toward the center |
+| 78 | [`practice_28`](./practice_28/) | Arrays / Rotation Algorithm | Rotate an array by `k` steps using the three-step block reversal algorithm |

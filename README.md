@@ -69,7 +69,7 @@ STM32/
 │   ├── struct/
 │   ├── union/
 │   ├── bitwise_operator/
-│   └── ...                  # 69 projects total
+│   └── ...                  # 78 projects total
 │
 ├── target/                  # STM32 bare-metal projects
 │   ├── helloworld_semihosting/
@@ -129,6 +129,7 @@ gcc project.c -o project && ./project
 - Register bitwise operations: setting, clearing, toggling, testing bits, bitfield manipulation, MSB isolation, bit spreading/interleaving, register packing macros, and status register flag decoding
 - C & firmware pitfalls: bitwise operator precedence, integer promotion with bitwise NOT, and macro multiple-evaluation side effects
 - Bitwise algorithms: in-place XOR variable swap
+- Array algorithms & patterns: even/odd index parity sums, prefix/cumulative sum, conditional element transformation, triplet sum search (target 3-sum), second distinct maximum with duplicate handling, auxiliary and two-pointer in-place reversal, and $k$-step array rotation via reversal algorithm
 - Build process understanding
 
 ### STM32 Bare-Metal (`target/`)
