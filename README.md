@@ -75,10 +75,10 @@ STM32/
 │   ├── helloworld_semihosting/
 │   ├── sizeof/
 │   ├── 007volatile/
+│   ├── PR/
 │   ├── led_on/
 │   ├── struct_based_led/
 │   ├── pin_read/
-│   ├── PR/
 │   └── KEYPAD/
 │
 ├── stm32-board.png
@@ -86,6 +86,25 @@ STM32/
 ├── stm32f103c8 (1).pdf
 └── original-schematic-STM32F103C8T6-Blue_Pill.pdf
 ```
+
+---
+
+## 🎯 Target Projects (STM32 Bare-Metal)
+
+All target projects run directly on the **STM32F103C8T6 (Blue Pill)** with **no HAL, no CMSIS, no drivers** — purely memory-mapped register manipulation.
+
+| # | Project | Concept | Key Registers | Description |
+|---|---------|---------|---------------|-------------|
+| 1 | [`helloworld_semihosting`](./target/helloworld_semihosting/) | Semihosting | — | First program: `printf("Hello World")` over SWD via ARM semihosting |
+| 2 | [`sizeof`](./target/sizeof/) | Data Types / Architecture | — | Prints byte sizes of C data types on the ARM Cortex-M3 target |
+| 3 | [`007volatile`](./target/007volatile/) | `volatile` Keyword | — | Demonstrates why `volatile` prevents compiler optimization of hardware registers |
+| 4 | [`PR`](./target/PR/) | GPIO Output / Register Basics | `RCC_APB2ENR`, `GPIOC_CRH`, `GPIOC_ODR` | First LED blink (PC13) — direct register manipulation using raw hex values |
+| 5 | [`led_on`](./target/led_on/) | GPIO Output / Bit Manipulation | `RCC_APB2ENR`, `GPIOC_CRH`, `GPIOC_ODR` | LED blink refactored using clean bit-shift expressions instead of raw hex |
+| 6 | [`struct_based_led`](./target/struct_based_led/) | Structs / Register Abstraction | `RCC_APB2ENR`, `GPIOC_CRH`, `GPIOC_ODR` | LED blink using C structs mapped to peripheral registers — foundational HAL/CMSIS pattern |
+| 7 | [`pin_read`](./target/pin_read/) | GPIO Input + Output | `GPIOA_CRL`, `GPIOA_IDR`, `GPIOA_ODR`, `GPIOC_CRH`, `GPIOC_ODR` | Reads digital input on PA0 (button with internal pull-down) to drive PC13 LED |
+| 8 | [`KEYPAD`](./target/KEYPAD/) | GPIO Multiplexing / Matrix Scanning | `GPIOA_CRH`, `GPIOB_CRH`, `GPIOA_IDR`, `GPIOB_ODR` | 4×4 matrix keypad scanner using row-drive / column-read multiplexing with semihosting output |
+
+> 📖 Each project contains its own self-contained source, debug configs, and dedicated [`README.md`](./target/README.md) with circuit schematics and register breakdowns.
 
 ---
 
